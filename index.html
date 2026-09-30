@@ -11,7 +11,7 @@
       name="description"
       content="An intrusion detection system that asks TypeSafe's Jev two typed questions about one network flow and gets a verdict back, with no text to parse."
     />
-    <link rel="canonical" href="https://jev-ids.github.io/" />
+    <link rel="canonical" href="https://jev-sec.github.io/" />
     <meta property="og:type" content="website" />
     <meta
       property="og:title"
@@ -21,8 +21,8 @@
       property="og:description"
       content="An intrusion detection system that asks TypeSafe's Jev two typed questions about one network flow and gets a verdict back, with no text to parse."
     />
-    <meta property="og:url" content="https://jev-ids.github.io/" />
-    <meta property="og:image" content="https://jev-ids.github.io/social.png" />
+    <meta property="og:url" content="https://jev-sec.github.io/" />
+    <meta property="og:image" content="https://jev-sec.github.io/social.png" />
     <meta name="twitter:card" content="summary_large_image" />
 
     <!-- The favicon is the T1 icon (prompt and cursor), the only lockup part that survives 16 px. -->
@@ -64,7 +64,7 @@
         ><span class="cursor" aria-hidden="true">▮</span>
       </a>
       <nav aria-label="Project links">
-        <a href="https://github.com/jev-ids/jev-ids">github</a>
+        <a href="https://github.com/jev-sec/jev-ids">github</a>
         <a href="https://docs.typesafe.ai/introduction">typesafe docs</a>
       </nav>
     </header>
@@ -174,7 +174,7 @@ verdict     <span class="a">→ attack</span>   <span class="c">p_attack ≥ 0.5
         <p>
           Everything Jev is told lives in one versioned file,
           <a
-            href="https://github.com/jev-ids/jev-ids/blob/main/prompts/nsl-kdd/jev.json"
+            href="https://github.com/jev-sec/jev-ids/blob/main/prompts/nsl-kdd/jev.json"
             ><code>prompts/nsl-kdd/jev.json</code></a
           >. Python adds only the flow and the examples, and the file's sha256
           rides with every prediction, so any verdict traces back to the exact
@@ -200,7 +200,7 @@ verdict     <span class="a">→ attack</span>   <span class="c">p_attack ≥ 0.5
           examples, so 6,000 predictions per detector and k. Means over the
           three seeds, from the runs of 2026-09-22; the full tables and figures
           are in
-          <a href="https://github.com/jev-ids/jev-ids/blob/main/docs/results.md"
+          <a href="https://github.com/jev-sec/jev-ids/blob/main/docs/results.md"
             >docs/results.md</a
           >.
         </p>
@@ -400,7 +400,7 @@ verdict     <span class="a">→ attack</span>   <span class="c">p_attack ≥ 0.5
           role="group"
           tabindex="0"
           aria-label="Clone and install"
-        ><code>git clone https://github.com/jev-ids/jev-ids.git
+        ><code>git clone https://github.com/jev-sec/jev-ids.git
 cd jev-ids
 uv sync
 <span class="c">.env: TYPESAFE_API_KEY for Jev. Gemini: gcloud auth application-default login,</span>
@@ -531,7 +531,7 @@ uv run jev-ids run --dataset data/nsl-kdd/dataset.json --detector jev --split sm
           <li>
             <strong>Describe your flows.</strong> Write a dataset card like
             <a
-              href="https://github.com/jev-ids/jev-ids/blob/main/data/nsl-kdd/dataset.json"
+              href="https://github.com/jev-sec/jev-ids/blob/main/data/nsl-kdd/dataset.json"
               ><code>data/nsl-kdd/dataset.json</code></a
             >: the columns your flow exporter emits, in order, which of them are
             symbolic, your categories and which one is benign.
@@ -539,7 +539,7 @@ uv run jev-ids run --dataset data/nsl-kdd/dataset.json --detector jev --split sm
           <li>
             <strong>Write the request.</strong> Copy
             <a
-              href="https://github.com/jev-ids/jev-ids/blob/main/prompts/nsl-kdd/jev.json"
+              href="https://github.com/jev-sec/jev-ids/blob/main/prompts/nsl-kdd/jev.json"
               ><code>prompts/nsl-kdd/jev.json</code></a
             >, replace <code>columns</code> and the category descriptions with
             yours, and keep the two questions.
@@ -625,9 +625,9 @@ uv run jev-ids run --dataset data/nsl-kdd/dataset.json --detector jev --split sm
         <span class="nowrap">TypeSafe or Google.</span>
       </p>
       <nav aria-label="Footer links">
-        <a href="https://github.com/jev-ids/jev-ids">github</a>
+        <a href="https://github.com/jev-sec/jev-ids">github</a>
         <a href="https://docs.typesafe.ai/introduction">typesafe docs</a>
-        <a href="https://github.com/jev-ids/jev-ids/blob/main/CONTEXT.md"
+        <a href="https://github.com/jev-sec/jev-ids/blob/main/CONTEXT.md"
           >glossary</a
         >
       </nav>
