@@ -72,7 +72,7 @@
     <main id="top">
       <!-- Hero: the display line, the tagline, the headline result, and one real
            request shown the way the CLI prints it. The headline ratios come from the
-           paper table below at k = 1: 2,421 / 315 ms, $1,651 / $74, precision 0.942 / 0.953,
+           paper table below at k = 1: median 1,647 / 307 ms, $1,651 / $74, precision 0.942 / 0.953,
            and 764 / 43 false alarms on 874 benign flows. -->
       <section class="hero" aria-labelledby="hero-title">
         <h1 id="hero-title">one flow.<br />one request.<br />one verdict.</h1>
@@ -89,7 +89,7 @@
         </p>
         <ul class="stats" aria-label="Headline results at k = 1">
           <li>
-            <strong>7.7×</strong>
+            <strong>5.4×</strong>
             <span>faster per verdict<br />than Gemini 3.6 Flash</span>
           </li>
           <li>
@@ -108,7 +108,8 @@
         <p class="headline">
           The LLM is the better detector on F1, 0.880 against 0.856 at k = 1 and
           ahead at every k. Jev is second, at a fraction of the time and cost,
-          and catches more zero-day attacks than the LLM from k = 1 to k = 8.
+          and catches more zero-day attacks than the LLM on average from k = 1
+          to k = 8, a difference the paired test confirms at k = 1 and 2.
         </p>
 
         <pre
@@ -242,7 +243,7 @@ verdict     <span class="a">→ attack</span>   <span class="c">p_attack ≥ 0.5
                 <td class="num">0.778</td>
                 <td class="num"><strong>0.747</strong></td>
                 <td class="num">43</td>
-                <td class="num">315 ms</td>
+                <td class="num">307 ms</td>
                 <td class="num">$74</td>
               </tr>
               <tr>
@@ -257,7 +258,7 @@ verdict     <span class="a">→ attack</span>   <span class="c">p_attack ≥ 0.5
                 <td class="num">0.826</td>
                 <td class="num">0.713</td>
                 <td class="num">57</td>
-                <td class="num">2,421 ms</td>
+                <td class="num">1,647 ms</td>
                 <td class="num">$1,651</td>
               </tr>
               <tr>
@@ -272,7 +273,7 @@ verdict     <span class="a">→ attack</span>   <span class="c">p_attack ≥ 0.5
                 <td class="num">1.000</td>
                 <td class="num">1.000</td>
                 <td class="num">764</td>
-                <td class="num">3 ms</td>
+                <td class="num">2.6 ms</td>
                 <td class="num">local</td>
               </tr>
               <tr>
@@ -285,7 +286,7 @@ verdict     <span class="a">→ attack</span>   <span class="c">p_attack ≥ 0.5
                 <td class="num">0.783</td>
                 <td class="num"><strong>0.721</strong></td>
                 <td class="num">56</td>
-                <td class="num">335 ms</td>
+                <td class="num">325 ms</td>
                 <td class="num">$295</td>
               </tr>
               <tr>
@@ -299,7 +300,7 @@ verdict     <span class="a">→ attack</span>   <span class="c">p_attack ≥ 0.5
                 <td class="num">0.823</td>
                 <td class="num">0.702</td>
                 <td class="num">50</td>
-                <td class="num">1,991 ms</td>
+                <td class="num">1,382 ms</td>
                 <td class="num">$3,035</td>
               </tr>
               <tr>
@@ -313,7 +314,7 @@ verdict     <span class="a">→ attack</span>   <span class="c">p_attack ≥ 0.5
                 <td class="num">0.950</td>
                 <td class="num">0.912</td>
                 <td class="num">278</td>
-                <td class="num">3 ms</td>
+                <td class="num">2.5 ms</td>
                 <td class="num">local</td>
               </tr>
               <tr>
@@ -328,7 +329,7 @@ verdict     <span class="a">→ attack</span>   <span class="c">p_attack ≥ 0.5
                 <td class="num">0.631</td>
                 <td class="num">0.263</td>
                 <td class="num">21</td>
-                <td class="num">3 ms</td>
+                <td class="num">2.6 ms</td>
                 <td class="num">local</td>
               </tr>
               <tr>
@@ -343,7 +344,7 @@ verdict     <span class="a">→ attack</span>   <span class="c">p_attack ≥ 0.5
                 <td class="num">0.624</td>
                 <td class="num">0.573</td>
                 <td class="num">19</td>
-                <td class="num">3 ms</td>
+                <td class="num">2.7 ms</td>
                 <td class="num">local</td>
               </tr>
             </tbody>
@@ -351,13 +352,16 @@ verdict     <span class="a">→ attack</span>   <span class="c">p_attack ≥ 0.5
         </div>
 
         <p>
-          Jev against Gemini over all 6,000 paired verdicts at k = 1: 508
-          differ, Jev is right in 195 and Gemini in 313 (McNemar p &lt; 0.001);
-          Gemini leads at every k. On the 900 zero-day attacks at k = 1: 118
-          differ, Jev is right in 74 and Gemini in 44 (p = 0.007); Jev also
-          leads at k = 2, and the two are indistinguishable at k = 4 and 8. Jev
-          against the Random Forest over all flows at k = 1: 2,909 differ, Jev
-          is right in 2,161 (p &lt; 0.001). A forest trained on five rows calls
+          Latency is the median of the successful requests for Jev and Gemini
+          and the mean per flow for the forests, which run locally on a MacBook
+          Air (Apple M3, 16 GB). Flow by flow across the three seeds, 111 flows
+          favor Jev and 208 favor Gemini at k = 1 (sign test, Holm-adjusted p
+          &lt; 0.001), and Gemini leads at every k. On the 300 zero-day attacks,
+          53 flows favor Jev and 26 Gemini at k = 1 (adjusted p = 0.013) and 77
+          against 37 at k = 2 (adjusted p = 0.001). At k = 0, 4 and 8 the
+          difference is not significant, and at k = 1 one of the three seeds
+          favors Gemini. Against the Random Forest at k = 1, 848 flows favor Jev
+          and 351 the forest (p &lt; 0.001). A forest trained on five rows calls
           almost everything an attack, which is why its recall is perfect and
           its precision is not: on the 874 benign flows it raised 764 false
           alarms, Jev 43.
@@ -378,8 +382,9 @@ verdict     <span class="a">→ attack</span>   <span class="c">p_attack ≥ 0.5
             direct call to TypeSafe's API.
           </li>
           <li>
-            Gemini 3.x cannot switch thinking off; it ran at the lowest level,
-            about 200 reasoning tokens per flow.
+            Gemini 3.x cannot switch thinking off. It ran at the lowest level
+            and at k = 1 used reasoning tokens in 57% of the requests, about 210
+            each.
           </li>
           <li>
             Every number is NSL-KDD's. NF-UQ-NIDS-v2 has a card and a
@@ -553,8 +558,8 @@ uv run jev-ids run --dataset data/nsl-kdd/dataset.json --detector jev --split sm
             <strong>Call the detector.</strong>
             <code>JevDetector(load_prompt(path)).predict(flow, examples)</code>
             returns <code>p_attack</code>, <code>category_pred</code> and
-            <code>confidence</code> for one flow in about half a second. Route
-            <code>p_attack</code> to your alerting with the cut your alarm
+            <code>confidence</code> for one flow in about a third of a second.
+            Route <code>p_attack</code> to your alerting with the cut your alarm
             budget allows; 0.5 was the benchmark's choice, not a rule.
           </li>
           <li>
