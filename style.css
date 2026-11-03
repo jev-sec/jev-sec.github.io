@@ -1,7 +1,7 @@
 /* Jev IDS site: the Terminal system of the Figma page "Website".
    Dark is the default; the light palette is the same system on paper. */
 
-/* Semantic tokens (T0 · Fundamentos) plus the three figure colors (T2),
+/* Semantic tokens (T0 · Fundamentos) plus the four figure colors (T2),
    one per detector, so a chart and its table always agree. */
 :root {
   --bg: #0b0f0e;
@@ -13,7 +13,7 @@
   --grid: #1e6b3f;
   --prompt: #1e6b3f;
   --jev: #3dff8a;
-  --llm: #ffb454;
+  --knn: #ff8ac0;
   --rf: #6ec1ff;
   --if: #e6c34a;
   --mono:
@@ -38,7 +38,7 @@
        lockup's prompt borrows the muted grey and stays readable. */
     --prompt: #5f6b65;
     --jev: #0b6b3a;
-    --llm: #b36b00;
+    --knn: #b0306f;
     --rf: #1f6fb2;
     --if: #8a6d00;
   }
@@ -248,6 +248,12 @@ code {
   font-size: 0.92em;
 }
 
+/* A long call in running text breaks where it must, so a phone never scrolls sideways. */
+p code,
+li code {
+  overflow-wrap: anywhere;
+}
+
 /* Terminal blocks (T3 · CLI output): surface panel, dim border, attacks and
    verdicts in phosphor, comments in grey. Long lines scroll inside the block,
    never the page. */
@@ -330,6 +336,88 @@ code {
   fill: var(--muted);
 }
 
+/* The label of a judged flow travels back on a dashed line, so the loop's
+   feedback reads apart from the request itself. */
+.pipeline .back {
+  stroke-dasharray: 5 4;
+}
+
+/* Results chart (T2): two panels on the site's tokens, thin gridlines, one
+   color and one marker shape per detector, values in text ink. */
+.chart {
+  display: block;
+  width: 100%;
+  min-width: 600px;
+  height: auto;
+}
+
+.chart text {
+  font: 400 12px var(--mono);
+  fill: var(--muted);
+}
+
+.chart .title,
+.chart .value {
+  fill: var(--text);
+}
+
+.chart .title {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.chart .grid {
+  stroke: var(--grid);
+  stroke-width: 1;
+}
+
+.chart polyline {
+  fill: none;
+  stroke-width: 2;
+}
+
+.chart .marks {
+  stroke: var(--bg);
+  stroke-width: 1.5;
+}
+
+.chart .jev {
+  stroke: var(--jev);
+  fill: var(--jev);
+}
+
+.chart .rf {
+  stroke: var(--rf);
+  fill: var(--rf);
+}
+
+.chart .knn {
+  stroke: var(--knn);
+  fill: var(--knn);
+}
+
+.chart .if {
+  stroke: var(--if);
+  fill: var(--if);
+}
+
+/* The chart legend sits above the panels, one marker square per detector. */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  max-width: none;
+  margin: 24px 0 0;
+  font: 400 13px/1.4 var(--mono);
+  color: var(--muted);
+}
+
+/* A definition the reader needs before going on, set off by a phosphor rule. */
+.note {
+  padding-left: 14px;
+  border-left: 2px solid var(--phosphor);
+}
+
 /* Evidence table (T2): mono, digits right-aligned, a color marker left of each
    detector name, thin rules, no zebra. */
 .scroll-x {
@@ -393,15 +481,15 @@ tbody strong {
   background: var(--jev);
 }
 
-.marker.llm {
-  background: var(--llm);
+.marker.knn {
+  background: var(--knn);
 }
 
 .marker.rf {
   background: var(--rf);
 }
 .marker.if {
-  background: var(--if, var(--rf));
+  background: var(--if);
 }
 
 /* The request diagram: three surface cards, one per word of the display line,
@@ -565,4 +653,10 @@ footer p {
 
 footer nav {
   margin: 16px 0;
+}
+
+/* A table of words, the categories, lets its cells wrap instead of scrolling. */
+.wrap td {
+  white-space: normal;
+  min-width: 9em;
 }

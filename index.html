@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <!-- Page identity and social preview. The og:image is absolute because crawlers
-         do not resolve relative paths; it points at the published organization site. -->
+         do not resolve relative paths, so it points at the published organization site. -->
     <title>Jev IDS · one flow. one request. one verdict.</title>
     <meta
       name="description"
-      content="An intrusion detection system that asks TypeSafe's Jev two typed questions about one network flow and gets a verdict back, with no text to parse."
+      content="An intrusion detection system that shows TypeSafe's Jev a few flows it has already seen, asks two typed questions about a new one and gets a verdict back, tested on CIC-IDS2017 with labels that come back late."
     />
     <link rel="canonical" href="https://jev-sec.github.io/" />
     <meta property="og:type" content="website" />
@@ -19,7 +19,7 @@
     />
     <meta
       property="og:description"
-      content="An intrusion detection system that asks TypeSafe's Jev two typed questions about one network flow and gets a verdict back, with no text to parse."
+      content="An intrusion detection system that shows TypeSafe's Jev a few flows it has already seen, asks two typed questions about a new one and gets a verdict back, tested on CIC-IDS2017 with labels that come back late."
     />
     <meta property="og:url" content="https://jev-sec.github.io/" />
     <meta property="og:image" content="https://jev-sec.github.io/social.png" />
@@ -28,7 +28,7 @@
     <!-- The favicon is the T1 icon (prompt and cursor), the only lockup part that survives 16 px. -->
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
 
-    <!-- Terminal system faces: IBM Plex Mono for display, code and labels, Inter for running text.
+    <!-- Terminal system faces, IBM Plex Mono for display, code and labels, Inter for running text.
          Preconnect shortens the round trip to the two Google Fonts hosts. -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -39,7 +39,7 @@
 
     <!-- The query string changes with every CSS edit, so Pages' 10 minute cache
          never serves an old stylesheet with a new page. -->
-    <link rel="stylesheet" href="style.css?v=20260922d" />
+    <link rel="stylesheet" href="style.css?v=20261103b" />
     <!-- Browser UI (address bar, tab strip) follows the two palettes. -->
     <meta
       name="theme-color"
@@ -51,10 +51,18 @@
       content="#E9F2EC"
       media="(prefers-color-scheme: light)"
     />
-  </head>
+  <style>/* tipografia automatica (viuvas, orfas e forcas) */
+p, li, blockquote {
+  orphans: 2;
+  widows: 2;
+  hyphens: manual;
+  text-wrap: pretty;
+}
+</style>
+</head>
 
   <body>
-    <!-- Header: the T1 horizontal lockup as styled text, plus the two outbound links.
+    <!-- Header, the T1 horizontal lockup as styled text, plus the two outbound links.
          aria-hidden on the glyph spans keeps the decorative cursor out of the accessible name. -->
     <header class="site-header">
       <a class="lockup" href="#top" aria-label="Jev IDS, top of page">
@@ -70,143 +78,466 @@
     </header>
 
     <main id="top">
-      <!-- Hero: the display line, the tagline, the headline result, and one real
-           request shown the way the CLI prints it. The headline ratios come from the
-           paper table below at k = 1: median 1,647 / 307 ms, $1,651 / $74, precision 0.942 / 0.953,
-           and 764 / 43 false alarms on 874 benign flows. -->
+      <!-- Hero, the display line, the tagline, the headline results and one real request
+           shown the way the CLI prints it. The four numbers come from the evidence table below,
+           zero-day recall 0.540 against 0.294 and F1 0.923 against 0.873 at D = 200, 1 to 6 false
+           alarms on 1,020 benign flows over every D and run, and 2,883 to 3,115 tokens per flow
+           at $0.042 per million. -->
       <section class="hero" aria-labelledby="hero-title">
         <h1 id="hero-title">one flow.<br />one request.<br />one verdict.</h1>
         <p class="lede">
-          An intrusion detection system that asks
-          <a href="https://docs.typesafe.ai/introduction">TypeSafe's Jev</a> two
-          typed questions about one network flow and gets a verdict back,
+          An intrusion detection system that shows
+          <a href="https://docs.typesafe.ai/introduction">TypeSafe's Jev</a> a
+          few flows it has already seen, asks two typed questions about a new
+          one and gets a verdict back,
           <span class="nowrap">with no text to parse.</span>
         </p>
         <p class="headline">
-          Put to the test on NSL-KDD, the classic intrusion detection benchmark,
-          against an LLM (Gemini 3.6 Flash), a Random Forest and an Isolation
-          Forest: 2,000 flows, three seeds, k from 0 to 8.
+          Tested on CIC-IDS2017, a public benchmark of network attacks, against
+          a Random Forest, a kNN and an Isolation Forest. The 2,000 test flows
+          are judged in the order they ended, and the true label of each one
+          comes back D flows later, with D from 1 to 200.
         </p>
-        <ul class="stats" aria-label="Headline results at k = 1">
+        <ul class="stats" aria-label="Headline results on CIC-IDS2017">
           <li>
-            <strong>5.4×</strong>
-            <span>faster per verdict<br />than Gemini 3.6 Flash</span>
+            <strong>54%</strong>
+            <span>of zero-day attacks<br />caught at D = 200</span>
           </li>
           <li>
-            <strong>22×</strong>
-            <span>cheaper per verdict<br />than Gemini 3.6 Flash</span>
+            <strong>29%</strong>
+            <span>for the Random Forest<br />on the same flows</span>
           </li>
           <li>
-            <strong>0.95</strong>
-            <span>precision, the same<br />as Gemini 3.6 Flash</span>
+            <strong>≤ 6</strong>
+            <span>false alarms on<br />1,020 benign flows</span>
           </li>
           <li>
-            <strong>18×</strong>
-            <span>fewer false alarms<br />than a Random Forest</span>
+            <strong>$131</strong>
+            <span>per million flows<br />at most, list price</span>
           </li>
         </ul>
         <p class="headline">
-          The LLM is the better detector on F1, 0.880 against 0.856 at k = 1 and
-          ahead at every k. Jev is second, at a fraction of the time and cost,
-          and catches more zero-day attacks than the LLM on average from k = 1
-          to k = 8, a difference the paired test confirms at k = 1 and 2.
+          With the label one flow late, the Random Forest scores a slightly
+          higher F1, 0.988 against 0.984, a difference the paired test does not
+          confirm. From D = 25 on, each of three runs of Jev IDS scores a higher
+          F1 than every classical detector, and the lead grows with D.
         </p>
 
         <pre
           class="terminal"
           role="group"
           tabindex="0"
-          aria-label="One Jev IDS request: the input flow, the two typed questions and the typed answers"
+          aria-label="One Jev IDS request, with the input flow, the two typed questions and the typed answers"
         ><code><span class="c">input</span>
-flow        one connection record from NSL-KDD, plus k labeled examples
+flow        one CICFlowMeter record from CIC-IDS2017, 83 columns, compact
+examples    chosen by the Selector, ceil(k) per category
 
 <span class="c">request: two typed questions to jev</span>
-is_attack   noul     Is the connection an intrusion attempt?
+is_attack   noul     Is the flow an intrusion attempt?
 category    choice   Which category does it belong to?
 
 <span class="c">output</span>
-is_attack   <span class="a">→ 0.82</span>
-category    <span class="a">→ dos, confidence 0.84</span>
-verdict     <span class="a">→ attack</span>   <span class="c">p_attack ≥ 0.5, the same cut for every detector</span></code></pre>
+is_attack   <span class="a">→ 0.80</span>
+category    <span class="a">→ DoS, confidence 0.89</span>
+verdict     <span class="a">→ attack</span>   <span class="c">p_attack ≥ 0.58, the cut taken before the test</span></code></pre>
       </section>
 
-      <!-- The request: what a System One Model is and what Jev IDS does with it. -->
-      <section aria-labelledby="request-title">
-        <h2 id="request-title">the request</h2>
+      <!-- The problem, in the words of the results report. What a flow is, what an IDS decides,
+           and the two facts that make it hard, zero-day attacks and late labels. -->
+      <section aria-labelledby="problem-title">
+        <h2 id="problem-title">the problem</h2>
         <p>
-          Jev IDS runs on a new kind of AI, the System One Model (SOM). Instead
-          of generating text, a SOM takes a state and standardized questions
-          about it and answers each one with a probability. Jev IDS hands it one
-          monitored network flow and gets back one verdict, attack or normal,
-          with the probability behind it.
+          A flow is the summary of one conversation between two computers. It
+          records how many packets and bytes went each way, how long the
+          conversation lasted, which port it used and dozens of other measures.
+          In CIC-IDS2017 each flow has 83 columns of measures and a label that
+          says whether it is normal traffic or which attack it belongs to.
+        </p>
+        <p>
+          An intrusion detection system (IDS) receives each flow and decides
+          whether it is benign traffic or part of an attack. When it decides
+          attack, it raises an alarm. Two facts make the task hard.
+        </p>
+        <p>
+          The first is that attacks appear that the system has never seen. A
+          detector that learned only from older examples tends to take such an
+          attack for normal traffic.
+        </p>
+        <p class="note">
+          <strong>zero-day attack.</strong> In network security, an attack the
+          defenders do not yet know when it happens, so they had zero days to
+          prepare. Here, the zero-day attacks are the three attack names of the
+          test that never appear in the system's starting memory. Jev IDS meets
+          them for the first time during the test, with no example of them.
+        </p>
+        <p>
+          The second is that the right answer arrives late. A security analyst
+          confirms that a flow was an attack only some time later, when the
+          damage shows or someone investigates. Until then the system keeps
+          judging new flows without knowing whether it got the earlier ones
+          right. This delay is called D and is counted in flows. With D = 1 the
+          label of a flow comes back before the next flow is judged. With D =
+          200 it comes back only after 200 more flows.
+        </p>
+      </section>
+
+      <!-- How it works, the request first, then the loop around it, step by step. -->
+      <section aria-labelledby="request-title">
+        <h2 id="request-title">how it works</h2>
+        <p>
+          Jev is an AI model from TypeSafe, of a kind called a System One Model
+          (SOM). It reads a state, a block of information, and answers typed
+          questions about it with probabilities, so there is no generated text
+          to parse. Jev IDS puts the flow to judge into the state, next to the
+          instructions, the column names, a description of each category and a
+          few flows whose category is already known, the examples. Then it asks
+          two questions.
         </p>
 
-        <!-- The three steps echo the display line. The example values are the first
-             row of a real run; the ratios in the hero block come from the paper table. -->
+        <!-- The three steps echo the display line. The values are the real answer for the first
+             flow of the zero-day DoS Slowhttptest burst, at D = 200 in the first run. -->
         <ol class="flow" aria-label="How one verdict is produced">
           <li>
             <span class="c step-label">input</span>
             <h3>one flow</h3>
             <p>
-              The monitoring record of a single connection: duration, protocol,
-              service, bytes in and out.
+              The record of a single connection, 83 columns, plus the examples
+              the Selector chose.
             </p>
           </li>
           <li>
             <span class="c step-label">jev</span>
             <h3>one request</h3>
             <p>
-              State: the instructions, a few labeled examples and the flow.
-              Questions: <code>is_attack</code> and <code>category</code>.
+              State: the instructions, the categories, the examples and the
+              flow. Questions: <code>is_attack</code> and
+              <code>category</code>.
             </p>
           </li>
           <li>
             <span class="c step-label">output</span>
             <h3>one verdict</h3>
             <p class="answers">
-              <span class="a">attack</span> · p_attack 0.82<br /><span class="a"
-                >dos</span
+              <span class="a">attack</span> · p_attack 0.80<br /><span class="a"
+                >DoS</span
               >
-              · confidence 0.84
+              · confidence 0.89
             </p>
           </li>
         </ol>
 
         <p>
-          Everything Jev is told lives in one versioned file,
-          <a
-            href="https://github.com/jev-sec/jev-ids/blob/main/prompts/nsl-kdd/jev.json"
-            ><code>prompts/nsl-kdd/jev.json</code></a
-          >. Python adds only the flow and the examples, and the file's sha256
-          rides with every prediction, so any verdict traces back to the exact
-          prompt. Examples are labeled by category only; attack names never
-          reach a model. Both questions are answered in parallel over the same
-          state, in one round trip.
+          <code>is_attack</code> comes back as a probability from 0 to 1, called
+          p_attack, and Jev IDS raises the alarm when it is at least 0.58.
+          <code>category</code> comes back as one of six categories with a
+          confidence, which says how concentrated Jev's probabilities over the
+          six are. The values above are a real answer, for the first flow of the
+          zero-day attack <code>DoS Slowhttptest</code> with D = 200.
+        </p>
+
+        <h3>the loop</h3>
+        <p>
+          Around that request runs a loop over the stream of flows. The top row
+          of the diagram is one step, and the bottom row is what Jev IDS adds
+          around Jev. The dashed line is the label of each judged flow, which
+          comes back D flows later to the memory and to the KController.
+        </p>
+        <!-- The loop on the site's own tokens, laid out like docs/stream.svg in the repository.
+             Jev is the one phosphor box, as jev_ids is in the integration diagram below. -->
+        <div class="scroll-x">
+          <svg
+            class="pipeline"
+            viewBox="0 0 600 214"
+            role="img"
+            aria-labelledby="loop-title"
+          >
+            <title id="loop-title">
+              The flow under test goes to jev, whose answer becomes the verdict.
+              Below, the memory feeds the KController and the Selector, and the
+              Selector sends the examples up to jev. A dashed line carries each
+              label back D flows later to the memory and the KController.
+            </title>
+            <rect class="box" x="16" y="24" width="150" height="36" rx="6" />
+            <text x="91" y="47" text-anchor="middle">flow under test</text>
+            <line class="main" x1="166" y1="42" x2="302" y2="42" />
+            <polygon class="head" points="302,37 310,42 302,47" />
+            <g class="jev">
+              <rect class="box" x="310" y="24" width="110" height="36" rx="6" />
+              <text x="365" y="47" text-anchor="middle">jev</text>
+            </g>
+            <line class="main" x1="420" y1="42" x2="462" y2="42" />
+            <polygon class="head" points="462,37 470,42 462,47" />
+            <rect class="box" x="470" y="24" width="114" height="36" rx="6" />
+            <text x="527" y="47" text-anchor="middle">verdict</text>
+            <rect class="box" x="16" y="128" width="100" height="36" rx="6" />
+            <text x="66" y="151" text-anchor="middle">memory</text>
+            <line class="main" x1="116" y1="146" x2="142" y2="146" />
+            <polygon class="head" points="142,141 150,146 142,151" />
+            <rect class="box" x="150" y="128" width="130" height="36" rx="6" />
+            <text x="215" y="151" text-anchor="middle">KController</text>
+            <line class="main" x1="280" y1="146" x2="302" y2="146" />
+            <polygon class="head" points="302,141 310,146 302,151" />
+            <rect class="box" x="310" y="128" width="110" height="36" rx="6" />
+            <text x="365" y="151" text-anchor="middle">Selector</text>
+            <line class="side" x1="365" y1="128" x2="365" y2="68" />
+            <polygon class="sidehead" points="360,68 365,60 370,68" />
+            <text class="label" x="373" y="98">examples</text>
+            <path class="side back" d="M527,60 V194 H66 V172" />
+            <polygon class="sidehead" points="61,172 66,164 71,172" />
+            <path class="side back" d="M215,194 V172" />
+            <polygon class="sidehead" points="210,172 215,164 220,172" />
+            <text class="label" x="420" y="186" text-anchor="middle">
+              label back at t + D
+            </text>
+          </svg>
+        </div>
+        <p>
+          The memory holds the labeled flows a step may draw examples from.
+          These are the flows of the pool, prepared before the test, that ended
+          before the flow under test, and every judged flow whose label has come
+          back.
+        </p>
+        <ol>
+          <li>
+            <strong>The flow arrives.</strong> CIC-IDS2017 was recorded by a
+            tool that writes a line when each connection ends, so a real IDS
+            receives a flow only once it has ended. Jev IDS sorts the test flows
+            by the moment each one ended and judges them one at a time in that
+            order, so each step uses only information that already existed.
+          </li>
+          <li>
+            <strong>The KController decides how many examples.</strong> It keeps
+            one number k for each category, and Jev receives k examples of each
+            category, rounded up. Every k starts at 1.
+          </li>
+          <li>
+            <strong>The Selector decides which examples.</strong> Within each
+            category it prefers the flows most similar to the flow under test,
+            the most recent ones and the ones Jev was unsure about, and passes
+            over near-duplicates so the examples show varied cases. Last, it adds
+            the benign flow nearest to the flow under test, so Jev always sees
+            the normal traffic closest to it.
+          </li>
+          <li>
+            <strong>The compact record shortens the text.</strong> Each decimal
+            value reaches Jev with 4 significant digits, so 25160.418 becomes
+            25160, and every column is kept. Jev charges for the tokens it
+            reads, and this saves 21% to 25% of them with no loss in F1.
+          </li>
+          <li>
+            <strong>Jev answers and Jev IDS decides.</strong> The alarm goes off
+            when p_attack is at least 0.58. That cut was taken before the test,
+            on a separate stream of 300 flows, and the test flows never tuned
+            it.
+          </li>
+          <li>
+            <strong>The label comes back D flows later.</strong> The judged flow
+            joins the memory with its true category. When Jev named the wrong
+            category, the k of the true category doubles, up to 8. When Jev was
+            right, that k falls by 1/k, down to 1 at the least. Every label
+            comes back, missed attacks included.
+          </li>
+        </ol>
+        <p>
+          The KController's rule mirrors the one TCP uses against congestion on
+          the internet (AIMD), which grows the sending window slowly and halves
+          it on a loss. In an IDS the costly mistake is showing too few
+          examples, so the KController grows k fast after an error and shrinks
+          it slowly after a success.
         </p>
         <p>
-          Three baselines follow the same protocol: an LLM agent with a JSON
-          output schema, a scikit-learn Random Forest trained on the same
-          examples, and an Isolation Forest fitted on benign traffic alone. Same
-          frozen split, same examples, same seeds.
+          Everything Jev is told lives in one versioned file,
+          <a
+            href="https://github.com/jev-sec/jev-ids/blob/main/prompts/cicids2017/jev.json"
+            ><code>prompts/cicids2017/jev.json</code></a
+          >. Python adds only the flow and the examples, and the file's sha256
+          rides with every prediction, so any verdict traces back to the exact
+          prompt. Examples are labeled by category only, and attack names never
+          reach a model.
         </p>
       </section>
 
-      <!-- Evidence: the paper table, the paired comparisons and the limits.
-           Every number here is in the README, docs/results.md or results/paper. -->
+      <!-- How it was tested, the data, the categories, the zero-day attacks, the detectors and
+           the number of runs. The counts are in data/cicids2017/splits/SOURCE.json. -->
+      <section aria-labelledby="tested-title">
+        <h2 id="tested-title">how it was tested</h2>
+        <p>
+          The test uses the relabelled
+          <a
+            href="https://intrusion-detection.distrinet-research.be/CNS2022/Dataset_Download.html"
+            >CIC-IDS2017</a
+          >
+          of Liu et al. (IEEE CNS 2022), public traffic recorded on a lab
+          network over five weekdays in July 2017, with attacks run by
+          researchers. The flows of each label on each day are sorted by time
+          and split in two halves. The earlier half may become examples, and
+          the later half may be judged. The pool, the memory at the start of
+          the test, is a sample of 88,066 flows of the earlier half. The 2,000
+          test flows were drawn from the later half, 1,020 benign and 980
+          attacks.
+        </p>
+
+        <div
+          class="scroll-x"
+          tabindex="0"
+          role="region"
+          aria-labelledby="categories-title"
+        >
+          <table class="wrap">
+            <caption id="categories-title">
+              the six categories of the test · 2,000 flows
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">category</th>
+                <th scope="col">what the traffic is</th>
+                <th scope="col">attack names, with their flows</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">BENIGN</th>
+                <td>normal traffic</td>
+                <td>1,020 flows</td>
+              </tr>
+              <tr>
+                <th scope="row">DoS</th>
+                <td>an attempt to bring a server down with too many requests</td>
+                <td>
+                  DoS Slowloris 101, DoS Slowhttptest 117
+                  <strong>(zero-day)</strong>, DoS Hulk 114, DoS GoldenEye 118
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">DDoS</th>
+                <td>the same attack, from many machines at once</td>
+                <td>DDoS 87</td>
+              </tr>
+              <tr>
+                <th scope="row">PortScan</th>
+                <td>a sweep of a machine's ports in search of open services</td>
+                <td>
+                  Portscan 106, Infiltration Portscan 89
+                  <strong>(zero-day)</strong>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">BruteForce</th>
+                <td>guessing passwords by trial and error</td>
+                <td>
+                  FTP-Patator 114, SSH-Patator 87 <strong>(zero-day)</strong>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Botnet</th>
+                <td>infected machines that obey a remote controller</td>
+                <td>Botnet 47</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          The three zero-day attack names never appear in the pool, so every
+          detector meets them first during the test. SSH-Patator guesses the
+          passwords of remote logins, DoS Slowhttptest brings a web server down
+          with very slow requests, and Infiltration Portscan is a port sweep run
+          from inside the network by a machine already broken into. Their
+          categories stay in the pool through the other attack names. Together
+          they hold 293 flows, and those flows measure the reaction to an
+          unknown attack.
+        </p>
+        <p>
+          Each attack name arrives in one burst, a stretch of the stream where
+          its flows come close together. The zero-day bursts span 116 to 171
+          flows. D = 1, 25, 50 and 100 are shorter than the shortest burst, so
+          some labels of a zero-day attack come back while it still lasts. D =
+          200 is longer than the longest, so each detector has to recognise the
+          attack without having seen it.
+        </p>
+        <p>Jev IDS is compared with three classical detectors.</p>
+        <ul>
+          <li>
+            <strong>Random Forest</strong> (100 trees) learns from labeled
+            examples of every category. It was the strongest classical detector
+            in this test.
+          </li>
+          <li>
+            <strong>kNN</strong> (4 neighbours) follows the category of the
+            memory flows nearest to the flow under test, in the Selector's own
+            distance, with no call to Jev. It tests whether Jev adds anything
+            beyond finding similar flows.
+          </li>
+          <li>
+            <strong>Isolation Forest</strong> (100 trees) learns only what
+            benign traffic looks like and flags what departs from it. It needs
+            no example of an attack, which makes it the natural rival on
+            zero-day attacks.
+          </li>
+        </ul>
+        <p>
+          The three are refitted at every step on the same memory as Jev IDS, so
+          at each judgement they know exactly what Jev IDS knows. A model
+          trained once before the test would miss the labels that come back
+          during it, and one trained on all the data would see flows from the
+          future. They raise the alarm at p_attack ≥ 0.5, their usual cut.
+        </p>
+        <p>
+          Jev can answer slightly differently when it gets the same question
+          twice, so Jev IDS ran three times at each D. The classical detectors
+          use fixed seeds and give the same answers every time, so each ran
+          once.
+        </p>
+      </section>
+
+      <!-- What the numbers mean, the four cases of a judged flow and the measures built on them. -->
+      <section aria-labelledby="numbers-title">
+        <h2 id="numbers-title">what the numbers mean</h2>
+        <p>
+          Every judged flow falls into one of four cases. An attack with an
+          alarm is a hit. An attack without an alarm is a missed attack. A
+          benign flow with an alarm is a false alarm. A benign flow without an
+          alarm is a correct silence.
+        </p>
+        <ul>
+          <li>
+            <strong>Zero-day recall</strong> is the share of the 293 zero-day
+            flows that raised an alarm. Higher is better.
+          </li>
+          <li>
+            <strong>False alarms</strong> count the benign flows, out of 1,020,
+            that raised an alarm. Lower is better, because each one costs an
+            analyst time.
+          </li>
+          <li>
+            <strong>F1</strong> joins the two goals, catching attacks and
+            avoiding false alarms, in one number from 0 to 1 that is high only
+            when both are good. It is 2 × hits divided by (2 × hits + false
+            alarms + missed attacks).
+          </li>
+          <li>
+            <strong>The paired test</strong> looks only at the flows where two
+            detectors disagree. If both were equally good, those flows would
+            split half and half, like a coin. The exact sign test gives p, the
+            chance of a split at least this uneven, and below 0.05 the
+            difference counts as real.
+          </li>
+        </ul>
+      </section>
+
+      <!-- Evidence, the table by delay, the chart, the paired tests, the ablations and the limits.
+           Every number here is in the README and docs/jevids-design.md of the repository. -->
       <section aria-labelledby="evidence-title">
         <h2 id="evidence-title">evidence</h2>
         <p>
-          Paper split of NSL-KDD: 2,000 flows, 1,126 of them attacks and 300 of
-          those zero-day, of a kind absent from the example pool. Three seeds of
-          examples, so 6,000 predictions per detector and k. Means over the
-          three seeds, from the runs of 2026-09-22; the full tables and figures
-          are in
-          <a href="https://github.com/jev-sec/jev-ids/blob/main/docs/results.md"
-            >docs/results.md</a
-          >.
+          The <code>paper-v2</code> split holds 2,000 flows of CIC-IDS2017 in
+          the order they ended, drawn from rows no earlier split held and read
+          once, in the runs of 2026-11-02. Jev IDS is the mean of its three runs
+          and its false alarms the range over them. Each classical detector ran
+          once.
         </p>
 
-        <!-- The table scrolls inside its own box on narrow screens, so eight columns never
+        <!-- The table scrolls inside its own box on narrow screens, so nine columns never
              push the page sideways. tabindex makes that box reachable by keyboard. -->
         <div
           class="scroll-x"
@@ -216,188 +547,391 @@ verdict     <span class="a">→ attack</span>   <span class="c">p_attack ≥ 0.5
         >
           <table>
             <caption id="evidence-table-title">
-              paper split of NSL-KDD · mean of three seeds
+              paper-v2 split of CIC-IDS2017 · by delay D
             </caption>
             <thead>
               <tr>
-                <th scope="col">detector</th>
-                <th scope="col" class="num">k</th>
-                <th scope="col" class="num">f1</th>
-                <th scope="col" class="num">precision</th>
-                <th scope="col" class="num">recall</th>
-                <th scope="col" class="num">zero-day recall</th>
-                <th scope="col" class="num">false alarms / 874</th>
-                <th scope="col" class="num">latency</th>
-                <th scope="col" class="num">cost / 1M flows</th>
+                <th scope="col" rowspan="2" class="num">D</th>
+                <th scope="colgroup" colspan="4">f1</th>
+                <th scope="colgroup" colspan="2">zero-day recall</th>
+                <th scope="colgroup" colspan="2">false alarms / 1,020</th>
+              </tr>
+              <tr>
+                <th scope="col" class="num">
+                  <span class="marker jev" aria-hidden="true"></span>jev ids
+                </th>
+                <th scope="col" class="num">
+                  <span class="marker rf" aria-hidden="true"></span>rf
+                </th>
+                <th scope="col" class="num">
+                  <span class="marker knn" aria-hidden="true"></span>knn
+                </th>
+                <th scope="col" class="num">
+                  <span class="marker if" aria-hidden="true"></span>if
+                </th>
+                <th scope="col" class="num">
+                  <span class="marker jev" aria-hidden="true"></span>jev ids
+                </th>
+                <th scope="col" class="num">
+                  <span class="marker rf" aria-hidden="true"></span>rf
+                </th>
+                <th scope="col" class="num">
+                  <span class="marker jev" aria-hidden="true"></span>jev ids
+                </th>
+                <th scope="col" class="num">
+                  <span class="marker rf" aria-hidden="true"></span>rf
+                </th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <th scope="row">
-                  <span class="marker jev" aria-hidden="true"></span>jev
-                  <span class="mut">(jev-1.13.0)</span>
-                </th>
-                <td class="num">1</td>
-                <td class="num">0.856</td>
+                <th scope="row" class="num">1</th>
+                <td class="num">0.984</td>
+                <td class="num"><strong>0.988</strong></td>
+                <td class="num">0.983</td>
+                <td class="num">0.495</td>
                 <td class="num"><strong>0.953</strong></td>
-                <td class="num">0.778</td>
-                <td class="num"><strong>0.747</strong></td>
-                <td class="num">43</td>
-                <td class="num">307 ms</td>
-                <td class="num">$74</td>
+                <td class="num">0.945</td>
+                <td class="num">1 to 2</td>
+                <td class="num"><strong>1</strong></td>
               </tr>
               <tr>
-                <th scope="row">
-                  <span class="marker llm" aria-hidden="true"></span>gemini 3.6
-                  flash
-                  <span class="mut">(gemini-3.6-flash)</span>
-                </th>
-                <td class="num">1</td>
-                <td class="num"><strong>0.880</strong></td>
-                <td class="num">0.942</td>
-                <td class="num">0.826</td>
+                <th scope="row" class="num">25</th>
+                <td class="num"><strong>0.975</strong></td>
+                <td class="num">0.961</td>
+                <td class="num">0.951</td>
+                <td class="num">0.494</td>
+                <td class="num"><strong>0.883</strong></td>
+                <td class="num">0.799</td>
+                <td class="num">2</td>
+                <td class="num"><strong>0</strong></td>
+              </tr>
+              <tr>
+                <th scope="row" class="num">50</th>
+                <td class="num"><strong>0.969</strong></td>
+                <td class="num">0.947</td>
+                <td class="num">0.934</td>
+                <td class="num">0.494</td>
+                <td class="num"><strong>0.861</strong></td>
                 <td class="num">0.713</td>
-                <td class="num">57</td>
-                <td class="num">1,647 ms</td>
-                <td class="num">$1,651</td>
+                <td class="num">3 to 6</td>
+                <td class="num"><strong>0</strong></td>
               </tr>
               <tr>
-                <th scope="row">
-                  <span class="marker rf" aria-hidden="true"></span>random
-                  forest
-                  <span class="mut">(100 trees)</span>
-                </th>
-                <td class="num">1</td>
-                <td class="num">0.748</td>
-                <td class="num">0.598</td>
-                <td class="num">1.000</td>
-                <td class="num">1.000</td>
-                <td class="num">764</td>
-                <td class="num">2.6 ms</td>
-                <td class="num">local</td>
-              </tr>
-              <tr>
-                <th scope="row">
-                  <span class="marker jev" aria-hidden="true"></span>jev
-                </th>
-                <td class="num">8</td>
-                <td class="num">0.854</td>
-                <td class="num">0.942</td>
-                <td class="num">0.783</td>
+                <th scope="row" class="num">100</th>
+                <td class="num"><strong>0.954</strong></td>
+                <td class="num">0.906</td>
+                <td class="num">0.898</td>
+                <td class="num">0.495</td>
                 <td class="num"><strong>0.721</strong></td>
-                <td class="num">56</td>
-                <td class="num">325 ms</td>
-                <td class="num">$295</td>
+                <td class="num">0.471</td>
+                <td class="num">2 to 4</td>
+                <td class="num"><strong>0</strong></td>
               </tr>
               <tr>
-                <th scope="row">
-                  <span class="marker llm" aria-hidden="true"></span>gemini 3.6
-                  flash
-                </th>
-                <td class="num">8</td>
-                <td class="num"><strong>0.881</strong></td>
-                <td class="num"><strong>0.949</strong></td>
-                <td class="num">0.823</td>
-                <td class="num">0.702</td>
-                <td class="num">50</td>
-                <td class="num">1,382 ms</td>
-                <td class="num">$3,035</td>
-              </tr>
-              <tr>
-                <th scope="row">
-                  <span class="marker rf" aria-hidden="true"></span>random
-                  forest
-                </th>
-                <td class="num">8</td>
-                <td class="num">0.865</td>
-                <td class="num">0.794</td>
-                <td class="num">0.950</td>
-                <td class="num">0.912</td>
-                <td class="num">278</td>
-                <td class="num">2.5 ms</td>
-                <td class="num">local</td>
-              </tr>
-              <tr>
-                <th scope="row">
-                  <span class="marker rf" aria-hidden="true"></span>random
-                  forest
-                  <span class="mut">(whole pool)</span>
-                </th>
-                <td class="num">all</td>
-                <td class="num">0.765</td>
-                <td class="num">0.971</td>
-                <td class="num">0.631</td>
-                <td class="num">0.263</td>
-                <td class="num">21</td>
-                <td class="num">2.6 ms</td>
-                <td class="num">local</td>
-              </tr>
-              <tr>
-                <th scope="row">
-                  <span class="marker if" aria-hidden="true"></span>isolation
-                  forest
-                  <span class="mut">(whole pool)</span>
-                </th>
-                <td class="num">all</td>
-                <td class="num">0.761</td>
-                <td class="num">0.974</td>
-                <td class="num">0.624</td>
-                <td class="num">0.573</td>
-                <td class="num">19</td>
-                <td class="num">2.7 ms</td>
-                <td class="num">local</td>
+                <th scope="row" class="num">200</th>
+                <td class="num"><strong>0.923</strong></td>
+                <td class="num">0.873</td>
+                <td class="num">0.869</td>
+                <td class="num">0.495</td>
+                <td class="num"><strong>0.540</strong></td>
+                <td class="num">0.294</td>
+                <td class="num">3</td>
+                <td class="num"><strong>0</strong></td>
               </tr>
             </tbody>
           </table>
         </div>
 
         <p>
-          Latency is the median of the successful requests for Jev and Gemini
-          and the mean per flow for the forests, which run locally on a MacBook
-          Air (Apple M3, 16 GB). Flow by flow across the three seeds, 111 flows
-          favor Jev and 208 favor Gemini at k = 1 (sign test, Holm-adjusted p
-          &lt; 0.001), and Gemini leads at every k. On the 300 zero-day attacks,
-          53 flows favor Jev and 26 Gemini at k = 1 (adjusted p = 0.013) and 77
-          against 37 at k = 2 (adjusted p = 0.001). At k = 0, 4 and 8 the
-          difference is not significant, and at k = 1 one of the three seeds
-          favors Gemini. Against the Random Forest at k = 1, 848 flows favor Jev
-          and 351 the forest (p &lt; 0.001). A forest trained on five rows calls
-          almost everything an attack, which is why its recall is perfect and
-          its precision is not: on the 874 benign flows it raised 764 false
-          alarms, Jev 43.
+          With D = 1, Jev IDS and the Random Forest are level, because both
+          learn almost at once from labels that come back one flow later. As D
+          grows, the Random Forest falls fast, above all on zero-day attacks.
+          Jev IDS falls more slowly, because Jev can judge an attack it has
+          never seen from examples of the known ones. The Random Forest raises
+          almost no false alarm, so the flows it loses are attacks it lets
+          through. At D = 200 it misses all 87 flows of SSH-Patator and all 89
+          of Infiltration Portscan, where the first run of Jev IDS catches 62
+          and 28. The Isolation Forest never uses the returning labels, finds
+          about 35% of all attacks at every D and raises 75 to 77 false alarms.
+        </p>
+
+        <!-- The chart draws the same means as the table, on the site's tokens. Marker shapes and
+             end labels carry each detector's identity next to its color. -->
+        <p class="legend" aria-hidden="true">
+          <span><span class="marker jev"></span>jev ids, mean of 3 runs</span>
+          <span><span class="marker rf"></span>random forest</span>
+          <span><span class="marker knn"></span>knn, 4 neighbours</span>
+          <span><span class="marker if"></span>isolation forest</span>
+        </p>
+        <div class="scroll-x">
+          <svg
+            class="chart"
+            viewBox="0 0 690 244"
+            role="img"
+            aria-labelledby="chart-title"
+          >
+            <title id="chart-title">
+              F1 and zero-day recall by delay D. Jev IDS stays above the Random
+              Forest and the kNN from D = 25 on, and its lead grows with D, to
+              0.923 against 0.873 in F1 and 0.540 against 0.294 in zero-day
+              recall at D = 200. The Isolation Forest stays flat, at 0.495 F1
+              and 0.328 zero-day recall.
+            </title>
+            <text class="title" x="56" y="18">(a) F1, all 2,000 flows</text>
+            <text class="title" x="400" y="18">(b) zero-day recall, 293 flows</text>
+            <line class="grid" x1="56" y1="194" x2="276" y2="194" />
+            <text x="48" y="198" text-anchor="end">0.85</text>
+            <line class="grid" x1="56" y1="140.67" x2="276" y2="140.67" />
+            <text x="48" y="144.67" text-anchor="end">0.90</text>
+            <line class="grid" x1="56" y1="87.33" x2="276" y2="87.33" />
+            <text x="48" y="91.33" text-anchor="end">0.95</text>
+            <line class="grid" x1="56" y1="34" x2="276" y2="34" />
+            <text x="48" y="38" text-anchor="end">1.00</text>
+            <text x="64" y="212" text-anchor="middle">1</text>
+            <text x="115" y="212" text-anchor="middle">25</text>
+            <text x="166" y="212" text-anchor="middle">50</text>
+            <text x="217" y="212" text-anchor="middle">100</text>
+            <text x="268" y="212" text-anchor="middle">200</text>
+            <text x="166" y="232" text-anchor="middle">D, flows until a label comes back</text>
+            <g class="jev">
+              <polyline points="64,50.55 115,60.35 166,66.56 217,83.57 268,115.99" />
+              <g class="marks">
+                <circle cx="64" cy="50.55" r="4" />
+                <circle cx="115" cy="60.35" r="4" />
+                <circle cx="166" cy="66.56" r="4" />
+                <circle cx="217" cy="83.57" r="4" />
+                <circle cx="268" cy="115.99" r="4" />
+              </g>
+            </g>
+            <g class="rf">
+              <polyline points="64,46.65 115,75.26 166,90.14 217,134.65 268,169.56" />
+              <g class="marks">
+                <rect x="60.5" y="43.15" width="7" height="7" />
+                <rect x="111.5" y="71.76" width="7" height="7" />
+                <rect x="162.5" y="86.64" width="7" height="7" />
+                <rect x="213.5" y="131.15" width="7" height="7" />
+                <rect x="264.5" y="166.06" width="7" height="7" />
+              </g>
+            </g>
+            <g class="knn">
+              <polyline points="64,52.25 115,86.48 166,104.11 217,142.4 268,173.56" />
+              <g class="marks">
+                <polygon points="64,47.75 68.5,55.75 59.5,55.75" />
+                <polygon points="115,81.98 119.5,89.98 110.5,89.98" />
+                <polygon points="166,99.61 170.5,107.61 161.5,107.61" />
+                <polygon points="217,137.9 221.5,145.9 212.5,145.9" />
+                <polygon points="268,169.06 272.5,177.06 263.5,177.06" />
+              </g>
+            </g>
+            <line class="grid" x1="400" y1="194" x2="620" y2="194" />
+            <text x="392" y="198" text-anchor="end">0.00</text>
+            <line class="grid" x1="400" y1="154" x2="620" y2="154" />
+            <text x="392" y="158" text-anchor="end">0.25</text>
+            <line class="grid" x1="400" y1="114" x2="620" y2="114" />
+            <text x="392" y="118" text-anchor="end">0.50</text>
+            <line class="grid" x1="400" y1="74" x2="620" y2="74" />
+            <text x="392" y="78" text-anchor="end">0.75</text>
+            <line class="grid" x1="400" y1="34" x2="620" y2="34" />
+            <text x="392" y="38" text-anchor="end">1.00</text>
+            <text x="408" y="212" text-anchor="middle">1</text>
+            <text x="459" y="212" text-anchor="middle">25</text>
+            <text x="510" y="212" text-anchor="middle">50</text>
+            <text x="561" y="212" text-anchor="middle">100</text>
+            <text x="612" y="212" text-anchor="middle">200</text>
+            <text x="510" y="232" text-anchor="middle">D, flows until a label comes back</text>
+            <g class="jev">
+              <polyline points="408,41.46 459,52.75 510,56.21 561,78.6 612,107.54" />
+              <g class="marks">
+                <circle cx="408" cy="41.46" r="4" />
+                <circle cx="459" cy="52.75" r="4" />
+                <circle cx="510" cy="56.21" r="4" />
+                <circle cx="561" cy="78.6" r="4" />
+                <circle cx="612" cy="107.54" r="4" />
+              </g>
+            </g>
+            <g class="rf">
+              <polyline points="408,42.74 459,66.22 510,79.87 561,118.64 612,147.04" />
+              <g class="marks">
+                <rect x="404.5" y="39.24" width="7" height="7" />
+                <rect x="455.5" y="62.72" width="7" height="7" />
+                <rect x="506.5" y="76.37" width="7" height="7" />
+                <rect x="557.5" y="115.14" width="7" height="7" />
+                <rect x="608.5" y="143.54" width="7" height="7" />
+              </g>
+            </g>
+            <g class="knn">
+              <polyline points="408,45.47 459,74.41 510,90.25 561,123.01 612,148.13" />
+              <g class="marks">
+                <polygon points="408,40.97 412.5,48.97 403.5,48.97" />
+                <polygon points="459,69.91 463.5,77.91 454.5,77.91" />
+                <polygon points="510,85.75 514.5,93.75 505.5,93.75" />
+                <polygon points="561,118.51 565.5,126.51 556.5,126.51" />
+                <polygon points="612,143.63 616.5,151.63 607.5,151.63" />
+              </g>
+            </g>
+            <g class="if">
+              <polyline points="408,141.58 459,141.58 510,141.58 561,141.58 612,141.58" />
+              <g class="marks">
+                <polygon points="408,137.08 412.5,141.58 408,146.08 403.5,141.58" />
+                <polygon points="459,137.08 463.5,141.58 459,146.08 454.5,141.58" />
+                <polygon points="510,137.08 514.5,141.58 510,146.08 505.5,141.58" />
+                <polygon points="561,137.08 565.5,141.58 561,146.08 556.5,141.58" />
+                <polygon points="612,137.08 616.5,141.58 612,146.08 607.5,141.58" />
+              </g>
+            </g>
+            <text class="value" x="276" y="119.99">jev 0.923</text>
+            <text class="value" x="276" y="167.56">rf 0.873</text>
+            <text class="value" x="276" y="184.56">knn 0.869</text>
+            <text class="value" x="64" y="188">if 0.495, below the scale</text>
+            <text class="value" x="620" y="111.54">jev 0.540</text>
+            <text class="value" x="620" y="148.04">rf 0.294</text>
+            <text class="value" x="620" y="161.13">knn 0.287</text>
+            <text class="value" x="408" y="133.58">if 0.328</text>
+          </svg>
+        </div>
+        <p>
+          Panel (a) shows F1 and panel (b) zero-day recall, both against the
+          delay D, and higher is better in both. The delays are evenly spaced,
+          so the step from 100 to 200 takes the same width as the step from 1
+          to 25.
+        </p>
+        <p>
+          Flow by flow, Jev IDS beats the Random Forest on zero-day attacks in
+          every run from D = 25 on (adjusted p ≤ 0.042) and on all flows in
+          every run from D = 50 on (adjusted p ≤ 0.0014). At D = 25 the win on
+          all flows holds in two runs of three. At D = 1 no run differs from the
+          forest on all flows, and in one run the forest is better on known
+          attacks. Longer delays add nothing past D = 200, because the gap stops
+          growing once the delay outlasts the bursts.
+        </p>
+
+        <h3>what each part adds</h3>
+        <p>
+          Each part of Jev IDS was removed or swapped in turn, one run each at D
+          = 1, 50 and 200, and compared with the full system.
+        </p>
+        <div
+          class="scroll-x"
+          tabindex="0"
+          role="region"
+          aria-labelledby="ablation-title"
+        >
+          <table>
+            <caption id="ablation-title">
+              ablations · one run each · F1 and false alarms at D = 1 / 50 / 200
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">line</th>
+                <th scope="col">what changes</th>
+                <th scope="col" class="num">f1</th>
+                <th scope="col" class="num">false alarms</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">
+                  <span class="marker jev" aria-hidden="true"></span>full
+                  system
+                </th>
+                <td>nothing</td>
+                <td class="num">0.985 / 0.970 / 0.925</td>
+                <td class="num">2 / 5 / 3</td>
+              </tr>
+              <tr>
+                <th scope="row">no selector</th>
+                <td>examples drawn at random</td>
+                <td class="num">0.925 / 0.935 / 0.886</td>
+                <td class="num">69 / 65 / 58</td>
+              </tr>
+              <tr>
+                <th scope="row">fixed k = 1</th>
+                <td>no KController</td>
+                <td class="num">0.978 / 0.962 / 0.916</td>
+                <td class="num">3 / 3 / 4</td>
+              </tr>
+              <tr>
+                <th scope="row">fixed k = 4</th>
+                <td>no KController, 4 per category</td>
+                <td class="num">0.990 / 0.978 / 0.928</td>
+                <td class="num">6 / 6 / 8</td>
+              </tr>
+              <tr>
+                <th scope="row">full record</th>
+                <td>every decimal kept</td>
+                <td class="num">0.982 / 0.972 / 0.923</td>
+                <td class="num">2 / 3 / 3</td>
+              </tr>
+              <tr>
+                <th scope="row">random, k = 4</th>
+                <td>no Selector, no KController</td>
+                <td class="num">0.957 / 0.955 / 0.927</td>
+                <td class="num">75 / 73 / 69</td>
+              </tr>
+              <tr>
+                <th scope="row">no nearest benign</th>
+                <td>no benign flow added</td>
+                <td class="num">0.979 / 0.971 / 0.929</td>
+                <td class="num">27 / 29 / 22</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          The Selector matters most. Without it, Jev IDS loses on all flows at
+          every D and raises 58 to 69 false alarms. The KController buys 0.7 to
+          0.8 points of F1 over one example per category for 5% to 10% more
+          tokens, and four examples per category tie with the full system for
+          twice the tokens. The nearest benign flow cuts the false alarms from
+          22 to 29 down to 2 to 5. The kNN, which reads the nearest flows
+          without Jev, ties with Jev IDS at D = 1 and loses from D = 25 on, in
+          the paired test of the first run.
         </p>
 
         <h3>limits worth knowing</h3>
         <ul>
           <li>
-            Cost is tokens times list price, not what was billed: $0.042 per
-            million input tokens for Jev, output free; $0.75 input and $3.75
-            output for Gemini through 2026-12-31, doubling on 2027-01-01, with
-            thinking tokens billed as output.
+            One dataset carries the stream results, and the delays were chosen
+            from the bursts of this same split.
           </li>
           <li>
-            Gemini's latency was measured with five processes in parallel on a
-            congested day (transient 429, 500 and 504 answers, all repaired), so
-            it is a real-day figure, not a floor. Jev's is the wall clock of one
-            direct call to TypeSafe's API.
+            Jev IDS ran three times at each D and every ablation once. Its F1
+            varies by up to 0.009 between runs, so a smaller gap between two
+            ablation lines may come from the run alone.
           </li>
           <li>
-            Gemini 3.x cannot switch thinking off. It ran at the lowest level
-            and at k = 1 used reasoning tokens in 57% of the requests, about 210
-            each.
+            The cut of 0.58 sits on a thin margin. On the validation stream, the
+            highest benign p_attack was 0.55 and the lowest attack p_attack
+            0.58.
           </li>
           <li>
-            Every number is NSL-KDD's. NF-UQ-NIDS-v2 has a card and a
-            preparation script and no run yet.
+            Every label comes back, missed attacks included. A real security
+            team confirms only some of them.
           </li>
           <li>
-            Jev's <code>noul</code> answer carries no confidence; only the
-            <code>choice</code> answer does.
+            Cost is tokens times TypeSafe's list price of $0.042 per million
+            input tokens, with output free, and the bill may differ. Latency is
+            the wall clock of one successful call, a median of 0.22 to 0.24 s
+            per flow.
           </li>
         </ul>
+
+        <h3>earlier benchmark: nsl-kdd</h3>
+        <p>
+          Before the stream, Jev IDS was measured on NSL-KDD as a k-shot
+          detector, with examples drawn at random and no feedback, against
+          Gemini 3.6 Flash, a Random Forest and an Isolation Forest. At k = 1 it
+          was 5.4 times faster and 22 times cheaper than the LLM, as precise
+          (0.953 against 0.942) and lower on F1 (0.856 against 0.880). The
+          tables are in
+          <a href="https://github.com/jev-sec/jev-ids/blob/main/docs/results.md"
+            >docs/results.md</a
+          >.
+        </p>
       </section>
 
-      <!-- Try it: the commands from the README, unchanged. -->
+      <!-- Try it, the commands from the README, unchanged. -->
       <section aria-labelledby="try-title">
         <h2 id="try-title">try it</h2>
         <pre
@@ -408,46 +942,48 @@ verdict     <span class="a">→ attack</span>   <span class="c">p_attack ≥ 0.5
         ><code>git clone https://github.com/jev-sec/jev-ids.git
 cd jev-ids
 uv sync
-<span class="c">.env: TYPESAFE_API_KEY for Jev. Gemini: gcloud auth application-default login,</span>
-<span class="c">      GOOGLE_GENAI_USE_VERTEXAI=true, GOOGLE_CLOUD_PROJECT, GOOGLE_CLOUD_LOCATION=global.</span></code></pre>
+<span class="c">.env holds TYPESAFE_API_KEY for Jev.</span></code></pre>
         <p>
-          Download
-          <a href="https://www.kaggle.com/datasets/hassan06/nslkdd">NSL-KDD</a>
-          into <code>data/raw/nsl-kdd/</code> and prepare it once.
+          Download <code>CICIDS2017_improved.zip</code> from the
+          <a
+            href="https://intrusion-detection.distrinet-research.be/CNS2022/Dataset_Download.html"
+            >relabelled version of Liu et al.</a
+          >
+          into <code>data/raw/cicids2017/</code> and prepare it once.
         </p>
         <pre
           class="terminal"
           role="group"
           tabindex="0"
-          aria-label="Prepare the dataset and run the smoke split"
-        ><code>uv run python -m scripts.prepare_nsl_kdd
-uv run jev-ids run --dataset data/nsl-kdd/dataset.json --detector jev --split smoke --k 0,1</code></pre>
+          aria-label="Prepare the dataset and stream the smoke split"
+        ><code>uv run python -m scripts.prepare_cicids2017
+uv run jev-ids run --dataset data/cicids2017/dataset.json --detector jev --split smoke --delay 1 --k 1 --control aimd --selection score+nearest --seeds 0</code></pre>
         <p>
           The smoke split is five flows. The run writes
-          <code>results/&lt;timestamp&gt;-nsl-kdd-jev-smoke/</code> with
+          <code>results/&lt;timestamp&gt;-cicids2017-jev-smoke/</code> with
           <code>config.json</code>, one JSON row per flow in
           <code>predictions.jsonl</code> and the raw answers in
-          <code>responses.jsonl</code>.
+          <code>responses.jsonl</code>. The README shows how to run the
+          classical detectors and reproduce every number on this page.
         </p>
       </section>
 
-      <!-- Bring your own flows: the research-prototype notice, where Jev sits beside a
+      <!-- Bring your own flows, the research-prototype notice, where Jev sits beside a
            commercial IDS (an inline SVG on the site's own tokens) and
-           the six integration steps. The numbers are the paper split's at k = 1. -->
+           the six integration steps. The numbers are the paper-v2 split's at D = 200. -->
       <section aria-labelledby="byof-title">
         <h2 id="byof-title">bring your own flows</h2>
         <p>
-          Jev IDS is an independent research prototype, not a product. Its
-          numbers come from one benchmark, NSL-KDD. It can still sit inside a
+          Jev IDS is an independent research prototype. Its numbers come from
+          two benchmarks, CIC-IDS2017 and NSL-KDD. It can still sit inside a
           commercial solution, and this is how.
         </p>
 
         <h3>where jev fits</h3>
         <p>
           A commercial IDS already has sensors, a flow exporter and a signature
-          engine feeding a SIEM. Jev IDS replaces none of them. It sits beside
-          the pipeline, off the packet path, and judges one flow record at a
-          time.
+          engine feeding a SIEM. Jev IDS sits beside that pipeline, off the
+          packet path, and judges one flow record at a time.
         </p>
         <div class="scroll-x">
           <svg
@@ -457,9 +993,9 @@ uv run jev-ids run --dataset data/nsl-kdd/dataset.json --detector jev --split sm
             aria-labelledby="pipeline-title"
           >
             <title id="pipeline-title">
-              Sensor, exporter, signatures, alerts and SIEM in one line; a side
-              channel leaves the exporter, goes through a queue to jev_ids and
-              returns into the SIEM.
+              Sensor, exporter, signatures, alerts and SIEM in one line, and a
+              side channel that leaves the exporter, goes through a queue to
+              jev_ids and returns into the SIEM.
             </title>
             <rect class="box" x="16" y="24" width="74" height="36" rx="6" />
             <text x="53" y="47" text-anchor="middle">sensor</text>
@@ -496,32 +1032,33 @@ uv run jev-ids run --dataset data/nsl-kdd/dataset.json --detector jev --split sm
         </div>
         <ul>
           <li>
-            <strong>Second opinion on alerts.</strong> Send Jev the flow behind
-            each alert the signature engine raised. <code>p_attack</code> ranks
-            the queue, and the SOC reads the top first. On the paper split at k
-            = 1, Jev raised 43 false alarms on 874 benign flows where a Random
-            Forest raised 764.
-          </li>
-          <li>
             <strong>A net behind the signatures.</strong> Signatures miss what
             they have never seen. Sample the flows the engine passed as clean,
-            or every flow to a critical asset, and let Jev judge them: it caught
-            75% of the zero-day attacks at k = 1, where the LLM caught 71%.
+            or every flow to a critical asset, and let Jev judge them. On
+            CIC-IDS2017, with labels 200 flows late, it caught 54% of the
+            zero-day attacks where a Random Forest caught 29%.
+          </li>
+          <li>
+            <strong>Learning from the analysts.</strong> Every alert an analyst
+            confirms or dismisses goes back into the memory as a labeled flow,
+            and the Selector and the KController use it from the next request
+            on, with no retraining.
           </li>
           <li>
             <strong>A category for the playbook.</strong> The
             <code>choice</code> answer names the category with a confidence, so
-            the SIEM routes dos, probe, r2l and u2r, or your own taxonomy, to
-            different runbooks with no parser in between.
+            the SIEM routes DoS, PortScan and BruteForce, or your own taxonomy,
+            to different runbooks with no parser in between.
           </li>
           <li>
             <strong>Coverage from day one.</strong> A new site or tenant has no
-            training set. Jev needs one labeled flow per category, so it covers
-            the segment while a classical model is still collecting data.
+            training set. Jev starts from one labeled flow per category, so it
+            covers the segment while a classical model is still collecting
+            data.
           </li>
         </ul>
         <p>
-          Half a second per verdict and a rate-limited gateway make this an
+          A quarter of a second per verdict and a rate-limited API make this an
           asynchronous side channel, fed from the exporter (NetFlow, IPFIX, Zeek
           <code>conn.log</code>) through a queue, never an inline filter.
         </p>
@@ -529,53 +1066,61 @@ uv run jev-ids run --dataset data/nsl-kdd/dataset.json --detector jev --split sm
         <h3>six steps</h3>
         <ol>
           <li>
-            <strong>Get a key.</strong> Jev is served by TypeSafe; set
+            <strong>Get a key.</strong> Jev is served by TypeSafe. Set
             <code>TYPESAFE_API_KEY</code> in <code>.env</code>. Pricing and
             terms are TypeSafe's.
           </li>
           <li>
             <strong>Describe your flows.</strong> Write a dataset card like
             <a
-              href="https://github.com/jev-sec/jev-ids/blob/main/data/nsl-kdd/dataset.json"
-              ><code>data/nsl-kdd/dataset.json</code></a
-            >: the columns your flow exporter emits, in order, which of them are
-            symbolic, your categories and which one is benign.
+              href="https://github.com/jev-sec/jev-ids/blob/main/data/cicids2017/dataset.json"
+              ><code>data/cicids2017/dataset.json</code></a
+            >, with the columns your flow exporter emits in order, which of them
+            are symbolic, your categories and which one is benign.
           </li>
           <li>
             <strong>Write the request.</strong> Copy
             <a
-              href="https://github.com/jev-sec/jev-ids/blob/main/prompts/nsl-kdd/jev.json"
-              ><code>prompts/nsl-kdd/jev.json</code></a
+              href="https://github.com/jev-sec/jev-ids/blob/main/prompts/cicids2017/jev.json"
+              ><code>prompts/cicids2017/jev.json</code></a
             >, replace <code>columns</code> and the category descriptions with
             yours, and keep the two questions.
           </li>
           <li>
-            <strong>Pick examples.</strong> One labeled flow per category from
-            your own network is enough to start; k = 1 is where the benchmark's
-            F1 reaches its plateau.
+            <strong>Seed the memory.</strong> One labeled flow per category
+            from your own network is enough to start, because the KController
+            begins at k = 1 and raises k only for the categories Jev gets
+            wrong.
           </li>
           <li>
             <strong>Call the detector.</strong>
             <code>JevDetector(load_prompt(path)).predict(flow, examples)</code>
             returns <code>p_attack</code>, <code>category_pred</code> and
-            <code>confidence</code> for one flow in about a third of a second.
-            Route <code>p_attack</code> to your alerting with the cut your alarm
-            budget allows; 0.5 was the benchmark's choice, not a rule.
+            <code>confidence</code> for one flow in about a quarter of a
+            second, and
+            <a
+              href="https://github.com/jev-sec/jev-ids/blob/main/jev_ids/stream.py"
+              ><code>stream.py</code></a
+            >
+            shows how the memory, the Selector and the KController choose
+            <code>examples</code> at each step. Route <code>p_attack</code> to
+            your alerting with the cut your alarm budget allows. 0.58 was the
+            benchmark's choice, not a rule.
           </li>
           <li>
             <strong>Measure before you trust.</strong> Run
-            <code>jev-ids run</code> and <code>jev-ids metrics</code> on a
-            labeled split of your own flows. The numbers above are NSL-KDD's,
-            not yours.
+            <code>jev-ids run --delay</code> and <code>jev-ids metrics</code> on
+            a labeled split of your own flows. The numbers above are
+            CIC-IDS2017's, not yours.
           </li>
         </ol>
         <p>
           Only flow features leave your network, never payloads, but they do
-          leave it: every request goes to the gateway.
+          leave it. Every request goes to TypeSafe's API.
         </p>
       </section>
 
-      <!-- The team: one card per person, the whole card a link to the GitHub profile.
+      <!-- The team, one card per person, the whole card a link to the GitHub profile.
            Portraits are served by GitHub, shown in grayscale until hovered. -->
       <section aria-labelledby="team-title">
         <h2 id="team-title">the team</h2>
@@ -623,7 +1168,7 @@ uv run jev-ids run --dataset data/nsl-kdd/dataset.json --detector jev --split sm
       </section>
     </main>
 
-    <!-- Footer: the independence notice and the links again. -->
+    <!-- Footer, the independence notice and the links again. -->
     <footer>
       <p>
         Jev IDS is an independent research project and is not affiliated with
