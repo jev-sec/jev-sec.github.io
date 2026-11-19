@@ -1,4 +1,4 @@
-/* Jev IDS site: the Terminal system of the Figma page "Website".
+/* JevIDS site: the Terminal system of the Figma page "Website".
    Dark is the default; the light palette is the same system on paper. */
 
 /* Semantic tokens (T0 · Fundamentos) plus the four figure colors (T2),
@@ -451,6 +451,17 @@ td {
 thead th {
   color: var(--muted);
   font-weight: 500;
+}
+
+/* The two result tables carry three seeds per cell, so they drop the spaces around
+   each slash and let the headers wrap to fit six columns in the text column. */
+table.seeds th,
+table.seeds td {
+  padding: 8px;
+}
+
+table.seeds thead th {
+  white-space: normal;
 }
 
 /* Numbers align by themselves with tabular figures, so no decimal trickery. */

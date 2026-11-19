@@ -2,9 +2,9 @@
   xmlns="http://www.w3.org/2000/svg"
   viewBox="0 0 32 32"
   role="img"
-  aria-label="Jev IDS"
+  aria-label="JevIDS"
 >
-  <title>Jev IDS</title>
+  <title>JevIDS</title>
   <!-- T1 icon: prompt and cursor on a bg square, the only lockup part that
        still reads at 16 px. Both glyphs are drawn as shapes, not type, so the
        favicon never depends on a font being available. -->

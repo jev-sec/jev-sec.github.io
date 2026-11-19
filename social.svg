@@ -4,9 +4,9 @@
   width="1200"
   height="630"
   role="img"
-  aria-label="Jev IDS · um fluxo. uma resposta. · github.com/jev-sec/jev-ids"
+  aria-label="JevIDS · um fluxo. uma resposta. · github.com/jev-sec/jev-ids"
 >
-  <title>Jev IDS · um fluxo. uma resposta.</title>
+  <title>JevIDS · um fluxo. uma resposta.</title>
   <!-- Social card (T3 · item 4): the square mark on the left, the name and the
        motto on the right, the repository URL below. Text keeps a Menlo fallback
        because the card is rasterised outside the browser, where IBM Plex Mono
@@ -56,7 +56,7 @@
     font-weight="700"
     fill="#E9F2EC"
   >
-    JEV IDS
+    JEVIDS
   </text>
   <text
     x="440"
