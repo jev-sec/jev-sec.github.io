@@ -342,6 +342,52 @@ li code {
   stroke-dasharray: 5 4;
 }
 
+/* The how-it-works diagram has seven columns, so it keeps a wider natural
+   size and scrolls sooner on a phone. */
+.pipeline.wide {
+  min-width: 760px;
+}
+
+/* The outline of jev_ids holds its parts, with no fill so the boxes stand out. */
+.pipeline .frame {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 1.5;
+}
+
+.pipeline .frame-name {
+  font-weight: 700;
+  fill: var(--phosphor);
+}
+
+.pipeline .dot {
+  fill: var(--muted);
+}
+
+/* A strip of page color under a dashed line where it crosses another one. */
+.pipeline .gap {
+  stroke: var(--bg);
+  stroke-width: 6;
+}
+
+/* The paper link: a phosphor outline, so it reads as the page's main action. */
+.paper-link {
+  display: inline-block;
+  padding: 4px 12px;
+  border: 1px solid var(--phosphor);
+  border-radius: 6px;
+  font: 700 14px/1.4 var(--mono);
+  text-decoration: none;
+}
+
+.paper-link:hover {
+  background: var(--surface);
+}
+
+.paper-cta {
+  margin-top: 28px;
+}
+
 /* Results chart (T2): two panels on the site's tokens, thin gridlines, one
    color and one marker shape per detector, values in text ink. */
 .chart {

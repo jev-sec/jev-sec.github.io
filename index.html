@@ -65,7 +65,7 @@
   </head>
 
   <body>
-    <!-- Header, the T1 horizontal lockup as styled text, plus the two outbound links.
+    <!-- Header, the T1 horizontal lockup as styled text, plus the paper and two outbound links.
          aria-hidden on the glyph spans keeps the decorative cursor out of the accessible name. -->
     <header class="site-header">
       <a class="lockup" href="#top" aria-label="JevIDS, top of page">
@@ -75,6 +75,7 @@
         ><span class="cursor" aria-hidden="true">▮</span>
       </a>
       <nav aria-label="Project links">
+        <a class="paper-link" href="https://arxiv.org/abs/2610.01079">paper</a>
         <a href="https://github.com/jev-sec/jev-ids">github</a>
         <a href="https://docs.typesafe.ai/introduction">typesafe docs</a>
       </nav>
@@ -94,11 +95,10 @@
           <span class="nowrap">with no text to parse.</span>
         </p>
         <p class="headline">
-          Tested on two public datasets of network attacks, CIC-IDS2017 and
-          TRUSTLab, against a Random Forest, two kNN, an Isolation Forest and
-          Claude Sonnet 5.5. The 2,000 test flows of each dataset are judged in
-          the order they ended, and the true label of each one comes back 200
-          flows later.
+          Tested on
+          <a href="https://doi.org/10.1109/CNS56114.2022.9947235">CIC-IDS2017</a>
+          and <a href="https://doi.org/10.3389/fcomp.2026.1803271">TRUSTLab</a>
+          against Random Forest, Isolation Forest, two kNN and Claude Sonnet 5.5.
         </p>
         <ul
           class="stats"
@@ -125,14 +125,10 @@
             <span>for the Random Forest<br />on the same flows</span>
           </li>
         </ul>
-        <p class="headline">
-          Each F1 is read at one alarm cut per dataset, calibrated before the
-          test and shared by every detector, over the three seeds of JevIDS, and
-          covers only the flows judged before any label of their attack came
-          back. The ROC-AUC, which needs no cut, is 0.994 to 0.995 on
-          CIC-IDS2017 and 0.930 to 0.933 on TRUSTLab, the highest of the
-          detectors tested. On TRUSTLab the bootstrap range of the F1 difference
-          between JevIDS and the Random Forest contains 0.
+        <p class="paper-cta">
+          <a class="paper-link" href="https://arxiv.org/abs/2610.01079"
+            >read the paper · arXiv 2610.01079</a
+          >
         </p>
 
         <pre
@@ -141,7 +137,7 @@
           tabindex="0"
           aria-label="One JevIDS step, with the input flow, the two typed questions, Jev's typed answers, the matched kNN and the fused verdict"
         ><code><span class="c">input</span>
-flow         one CICFlowMeter record from CIC-IDS2017, 78 features, compact
+flow         one CICFlowMeter record, every feature, compact
 examples     chosen by the Selector, ceil(k) per category
 
 <span class="c">request: two typed questions to jev</span>
@@ -156,33 +152,7 @@ fused        <span class="a">→ 0.60</span>   <span class="c">mean of the two p
 verdict      <span class="a">→ attack</span>   <span class="c">fused ≥ 0.26, the cut taken before the test</span></code></pre>
       </section>
 
-      <!-- The problem. What a flow is, what an IDS decides, and the two facts that make it
-           hard, zero-day attacks and late labels. -->
-      <section aria-labelledby="problem-title">
-        <h2 id="problem-title">the problem</h2>
-        <p>
-          A flow is the summary of one conversation between two computers, such
-          as its packets, bytes, duration and port. An intrusion detection
-          system (IDS) judges each flow as benign or attack. Two facts make this
-          hard. Some attacks are new to the system, and the right answer arrives
-          late, because an analyst confirms an attack only after someone
-          investigates it.
-        </p>
-        <p class="note">
-          <strong>zero-day attack.</strong> Here, a flow whose attack name never
-          appears in the system's starting memory. A flow is at
-          <strong>first contact</strong> when it is judged before any flow of
-          its attack name has come back with its label. The results count these
-          flows.
-        </p>
-        <p>
-          The delay D is counted in flows. With D = 200, a label comes back
-          after 200 more flows, longer than every zero-day burst in the
-          CIC-IDS2017 test.
-        </p>
-      </section>
-
-      <!-- How it works, the request first, then the parts around it and the loop diagram. -->
+      <!-- How it works, the request first, then the parts around it and the diagram. -->
       <section aria-labelledby="request-title">
         <h2 id="request-title">how it works</h2>
         <p>
@@ -201,8 +171,8 @@ verdict      <span class="a">→ attack</span>   <span class="c">fused ≥ 0.26,
             <span class="c step-label">input</span>
             <h3>one flow</h3>
             <p>
-              The record of a single connection, 78 features, plus the examples
-              the Selector chose.
+              The CICFlowMeter record of a single flow, plus the examples the
+              Selector chose.
             </p>
           </li>
           <li>
@@ -229,78 +199,112 @@ verdict      <span class="a">→ attack</span>   <span class="c">fused ≥ 0.26,
           The KController sets k per category, starting at 1, raising it when
           Jev names the wrong category and lowering it when Jev is right. The
           Selector picks which examples, preferring flows close to the one under
-          test, recent ones and ones Jev doubted. The matched kNN lets as many
-          nearest flows vote as the Selector gives Jev at k = 4, at no cost. The full JevIDS turns each answer into
-          its percentile on a development stream, because the two detectors
-          catch different attacks, and raises the alarm when their mean reaches
-          the cut, 0.2608 on CIC-IDS2017 and 0.377 on TRUSTLab.
+          test, recent ones and ones Jev doubted, and the compact record cuts
+          each number to 4 significant digits. The matched kNN lets as many
+          nearest flows vote as the Selector gives Jev at k = 4, at no cost. The
+          full JevIDS turns each answer into its percentile on a development
+          stream, because the two detectors catch different attacks, and raises
+          the alarm when their mean reaches the cut, 0.2608 on CIC-IDS2017 and
+          0.377 on TRUSTLab.
         </p>
         <p>
-          The dashed line carries each label back to the memory D flows later.
+          Solid arrows judge one flow. Dashed arrows are the feedback, which
+          brings each true label back to the memory after a delay of D flows
+          and lets the KController compare it with the category Jev gave.
         </p>
-        <!-- The loop on the site's own tokens. Jev is the one phosphor box, as jev_ids is in the
-             integration diagram below. -->
-        <div class="scroll-x">
+        <!-- One flow through jev_ids, left to right: the jev branch on top, the matched kNN below,
+             the fusion on the right and the dashed feedback. Jev is the one phosphor box. -->
+        <div
+          class="scroll-x"
+          tabindex="0"
+          role="region"
+          aria-label="Diagram of JevIDS, scrolls sideways on narrow screens"
+        >
           <svg
-            class="pipeline"
-            viewBox="0 0 600 276"
+            class="pipeline wide"
+            viewBox="0 0 780 392"
             role="img"
             aria-labelledby="loop-title"
           >
             <title id="loop-title">
-              The flow under test goes to jev, whose p_attack goes to the
-              percentile mean and then to the verdict. Below jev, the Selector
-              sends the examples up to jev, and the KController tells the
-              Selector how many. Below the percentile mean, the matched kNN
-              sends its p_attack up to it. The memory feeds the KController, the
-              Selector and the matched kNN. A dashed line carries each label
-              back D flows later from the verdict to the memory.
+              A flow enters jev_ids and splits in two. On top, the Selector
+              takes examples from the memory and k per category from the
+              KController, then the compact record goes to jev and jev's
+              p_attack to its percentile. Below, the matched kNN takes its
+              neighbours from the memory, and its p_attack goes to its
+              percentile. The alarm takes the mean of the two percentiles and
+              compares it with the cut, giving the verdict. Dashed feedback
+              arrows bring the true label to the memory D flows later, and the
+              memory and jev's category to the KController.
             </title>
-            <rect class="box" x="16" y="24" width="146" height="36" rx="6" />
-            <text x="89" y="47" text-anchor="middle">flow under test</text>
-            <line class="main" x1="162" y1="42" x2="176" y2="42" />
-            <polygon class="head" points="176,37 184,42 176,47" />
+            <rect class="frame" x="92" y="10" width="568" height="308" rx="10" />
+            <text class="frame-name" x="106" y="30">jev_ids</text>
+            <rect class="box" x="8" y="150" width="64" height="36" rx="6" />
+            <text x="40" y="173" text-anchor="middle">flow</text>
+            <line class="main" x1="72" y1="168" x2="106" y2="168" />
+            <circle class="dot" cx="106" cy="168" r="3.5" />
+            <path class="main" d="M106,168 V58 H112" />
+            <polygon class="head" points="112,63 120,58 112,53" />
+            <path class="main" d="M106,168 V278 H240" />
+            <polygon class="head" points="240,283 248,278 240,273" />
+            <rect class="box" x="120" y="40" width="100" height="36" rx="6" />
+            <text x="170" y="63" text-anchor="middle">Selector</text>
+            <rect class="box" x="248" y="40" width="136" height="36" rx="6" />
+            <text x="316" y="63" text-anchor="middle">compact record</text>
             <g class="jev">
-              <rect class="box" x="184" y="24" width="110" height="36" rx="6" />
-              <text x="239" y="47" text-anchor="middle">jev</text>
+            <rect class="box" x="412" y="40" width="64" height="36" rx="6" />
+            <text x="444" y="63" text-anchor="middle">jev</text>
             </g>
-            <line class="main" x1="294" y1="42" x2="318" y2="42" />
-            <polygon class="head" points="318,37 326,42 318,47" />
-            <rect class="box" x="326" y="24" width="144" height="36" rx="6" />
-            <text x="398" y="47" text-anchor="middle">percentile mean</text>
-            <line class="main" x1="470" y1="42" x2="490" y2="42" />
-            <polygon class="head" points="490,37 498,42 490,47" />
-            <rect class="box" x="498" y="24" width="86" height="36" rx="6" />
-            <text x="541" y="47" text-anchor="middle">verdict</text>
-            <rect class="box" x="16" y="110" width="146" height="36" rx="6" />
-            <text x="89" y="133" text-anchor="middle">KController</text>
-            <line class="main" x1="162" y1="128" x2="176" y2="128" />
-            <polygon class="head" points="176,123 184,128 176,133" />
-            <rect class="box" x="184" y="110" width="110" height="36" rx="6" />
-            <text x="239" y="133" text-anchor="middle">Selector</text>
-            <line class="side" x1="239" y1="110" x2="239" y2="68" />
-            <polygon class="sidehead" points="234,68 239,60 244,68" />
-            <text class="label" x="247" y="90">examples</text>
-            <rect class="box" x="326" y="110" width="144" height="36" rx="6" />
-            <text x="398" y="133" text-anchor="middle">matched kNN</text>
-            <line class="main" x1="398" y1="110" x2="398" y2="68" />
-            <polygon class="head" points="393,68 398,60 403,68" />
-            <rect class="box" x="16" y="196" width="454" height="36" rx="6" />
-            <text x="243" y="219" text-anchor="middle">memory</text>
-            <line class="main" x1="89" y1="196" x2="89" y2="154" />
-            <polygon class="head" points="84,154 89,146 94,154" />
-            <line class="main" x1="239" y1="196" x2="239" y2="154" />
-            <polygon class="head" points="234,154 239,146 244,154" />
-            <line class="main" x1="398" y1="196" x2="398" y2="154" />
-            <polygon class="head" points="393,154 398,146 403,154" />
-            <path class="side back" d="M541,60 V214 H478" />
-            <polygon class="sidehead" points="478,209 470,214 478,219" />
-            <text class="label" x="541" y="250" text-anchor="middle">
-              label back
-            </text>
-            <text class="label" x="541" y="266" text-anchor="middle">
-              at t + D
-            </text>
+            <rect class="box" x="504" y="40" width="136" height="36" rx="6" />
+            <text x="572" y="63" text-anchor="middle">jev percentile</text>
+            <line class="main" x1="220" y1="58" x2="240" y2="58" />
+            <polygon class="head" points="240,63 248,58 240,53" />
+            <line class="main" x1="384" y1="58" x2="404" y2="58" />
+            <polygon class="head" points="404,63 412,58 404,53" />
+            <line class="main" x1="476" y1="58" x2="496" y2="58" />
+            <polygon class="head" points="496,63 504,58 496,53" />
+            <rect class="box" x="120" y="150" width="100" height="36" rx="6" />
+            <text x="170" y="173" text-anchor="middle">memory</text>
+            <rect class="box" x="248" y="150" width="136" height="36" rx="6" />
+            <text x="316" y="173" text-anchor="middle">KController</text>
+            <rect class="box" x="504" y="144" width="136" height="48" rx="6" />
+            <text x="572" y="164" text-anchor="middle">alarm</text>
+            <text class="label" x="572" y="181" text-anchor="middle">mean ≥ cut</text>
+            <rect class="box" x="684" y="150" width="88" height="36" rx="6" />
+            <text x="728" y="173" text-anchor="middle">verdict</text>
+            <line class="main" x1="180" y1="150" x2="180" y2="84" />
+            <polygon class="head" points="185,84 180,76 175,84" />
+            <text class="label" x="174" y="117" text-anchor="end">examples</text>
+            <line class="main" x1="274" y1="150" x2="217.1" y2="82.1" />
+            <polygon class="head" points="221,78.9 212,76 213.3,85.3" />
+            <text class="label" x="250" y="114" text-anchor="start">k per category</text>
+            <line class="main" x1="572" y1="76" x2="572" y2="136" />
+            <polygon class="head" points="567,136 572,144 577,136" />
+            <line class="main" x1="572" y1="260" x2="572" y2="200" />
+            <polygon class="head" points="577,200 572,192 567,200" />
+            <line class="main" x1="640" y1="168" x2="676" y2="168" />
+            <polygon class="head" points="676,173 684,168 676,163" />
+            <rect class="box" x="248" y="260" width="136" height="36" rx="6" />
+            <text x="316" y="283" text-anchor="middle">matched kNN</text>
+            <rect class="box" x="504" y="260" width="136" height="36" rx="6" />
+            <text x="572" y="283" text-anchor="middle">kNN percentile</text>
+            <path class="main" d="M206,186 V214 H316 V252" />
+            <polygon class="head" points="311,252 316,260 321,252" />
+            <text class="label" x="324" y="240" text-anchor="start">neighbours</text>
+            <line class="main" x1="384" y1="278" x2="496" y2="278" />
+            <polygon class="head" points="496,283 504,278 496,273" />
+            <text class="label" x="444" y="270" text-anchor="middle">p_attack</text>
+            <rect class="box" x="36" y="346" width="228" height="36" rx="6" />
+            <text x="150" y="369" text-anchor="middle">true label, D flows later</text>
+            <line class="gap" x1="150" y1="346" x2="150" y2="194" />
+            <line class="side back" x1="150" y1="346" x2="150" y2="194" />
+            <polygon class="sidehead" points="155,194 150,186 145,194" />
+            <text class="label" x="158" y="336" text-anchor="start">true category</text>
+            <line class="side back" x1="220" y1="168" x2="240" y2="168" />
+            <polygon class="sidehead" points="240,173 248,168 240,163" />
+            <line class="side back" x1="428" y1="76" x2="373" y2="143.8" />
+            <polygon class="sidehead" points="369.2,140.6 368,150 376.9,146.9" />
+            <text class="label" x="402" y="122" text-anchor="start">jev's category</text>
           </svg>
         </div>
       </section>
@@ -313,9 +317,14 @@ verdict      <span class="a">→ attack</span>   <span class="c">fused ≥ 0.26,
           Both datasets are public lab traffic. Each attack name's flows of each
           day were cut in half in time, the earlier half feeding the pool, the
           memory at the start of the test, and the later half the test.
+          A zero-day flow carries an attack name absent from the pool.
           CIC-IDS2017's three zero-day names leave the pool while their
           categories keep other names. TRUSTLab's five zero-day families leave
           it whole, so they have no example until their first labels come back.
+          The 2,000 test flows of each dataset are judged in the order they
+          ended, each true label comes back D = 200 flows later, and the results
+          count a zero-day flow at first contact, judged before any flow of its
+          attack name has come back.
         </p>
 
         <div
@@ -387,8 +396,8 @@ verdict      <span class="a">→ attack</span>   <span class="c">fused ≥ 0.26,
         </p>
       </section>
 
-      <!-- Evidence, the tables at D = 200, the paired tests, the ablations and the limits.
-           Every number here is in the README and docs/jevids-design.md of the repository. -->
+      <!-- Evidence, the tables at D = 200, a short reading and the paper link.
+           Every number here is in results/paper/numbers.json of the repository. -->
       <section aria-labelledby="evidence-title">
         <h2 id="evidence-title">evidence</h2>
         <p>
@@ -571,189 +580,18 @@ verdict      <span class="a">→ attack</span>   <span class="c">fused ≥ 0.26,
         </div>
 
         <p>
-          The full JevIDS has the highest ROC-AUC on both datasets. Its PR-AUC
-          is the highest on TRUSTLab, 0.908 to 0.911 against 0.796 for the
-          Random Forest, and on CIC-IDS2017 it ties with Sonnet's, with the
-          interval of the difference containing 0 in every seed. On
-          CIC-IDS2017 Jev alone ranks the flows almost as well, yet at the cut it
-          flags every zero-day flow along with 121 to 129 benign ones, and the
-          full JevIDS catches 288 to 291 with 15 to 18 false alarms. On TRUSTLab
-          the full JevIDS and the Random Forest reach a similar F1, and the
-          bootstrap interval of the difference contains 0 in every seed.
+          The full JevIDS has the highest ROC-AUC on both datasets. In F1 it ties
+          with Sonnet on CIC-IDS2017 and with the Random Forest on TRUSTLab, and
+          the bootstrap interval of each difference contains 0 in every seed. On
+          TRUSTLab it beats Sonnet in F1, ROC-AUC and PR-AUC in every seed.
+          Complete tests checked each part of JevIDS, removed or swapped one at
+          a time.
         </p>
         <p>
-          Flow by flow, McNemar's exact test finds the full JevIDS catching more
-          zero-day flows than the Random Forest on TRUSTLab in every seed (10 to
-          2 discordant flows in seed 0, p = 0.039), and its ROC-AUC lies above
-          the Random Forest's in every seed. The three seeds judge the same
-          flows, so they are not independent evidence.
+          <a class="paper-link" href="https://arxiv.org/abs/2610.01079"
+            >read the paper · arXiv 2610.01079</a
+          >
         </p>
-        <p>
-          Sonnet ties the full JevIDS on CIC-IDS2017, with an F1 of 0.932 to
-          0.939 against 0.937 to 0.946, and the interval of the difference
-          contains 0 in every seed. On TRUSTLab the full JevIDS leads in F1, in
-          ROC-AUC and in PR-AUC in every seed, with an F1 of 0.837 to 0.840 against 0.706
-          to 0.726. Sonnet also refused 9 to 16 calls per run on CIC-IDS2017 and
-          72 to 79 on TRUSTLab, judging them cyber content.
-        </p>
-
-        <h3>what each part adds</h3>
-        <p>
-          Each part of Jev was removed or swapped in turn, and the full JevIDS
-          was rebuilt on each run, at D = 200 with seed 0.
-        </p>
-        <div
-          class="scroll-x"
-          tabindex="0"
-          role="region"
-          aria-labelledby="ablation-title"
-        >
-          <table>
-            <caption id="ablation-title">
-              ablations of the full JevIDS · D = 200 · seed 0
-            </caption>
-            <thead>
-              <tr>
-                <th scope="col">line</th>
-                <th scope="col">what changes</th>
-                <th scope="col" class="num">ROC-AUC</th>
-                <th scope="col" class="num">PR-AUC</th>
-                <th scope="col" class="num">F1</th>
-                <th scope="col" class="num">false alarms</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <th scope="rowgroup" colspan="6">CIC-IDS2017</th>
-              </tr>
-              <tr>
-                <th scope="row"><span class="marker jev" aria-hidden="true"></span>full JevIDS</th>
-                <td>nothing</td>
-                <td class="num">0.995</td>
-                <td class="num">0.976</td>
-                <td class="num">0.946</td>
-                <td class="num">15</td>
-              </tr>
-              <tr>
-                <th scope="row">fixed k = 1</th>
-                <td>the KController never raises k</td>
-                <td class="num">0.995</td>
-                <td class="num">0.977</td>
-                <td class="num">0.936</td>
-                <td class="num">17</td>
-              </tr>
-              <tr>
-                <th scope="row">fixed k = 4</th>
-                <td>no KController, 4 per category</td>
-                <td class="num">0.988</td>
-                <td class="num">0.956</td>
-                <td class="num">0.888</td>
-                <td class="num">24</td>
-              </tr>
-              <tr>
-                <th scope="row">no Selector</th>
-                <td>examples drawn at random</td>
-                <td class="num">0.951</td>
-                <td class="num">0.844</td>
-                <td class="num">0.748</td>
-                <td class="num">188</td>
-              </tr>
-              <tr>
-                <th scope="row">random, k = 4</th>
-                <td>no Selector, no KController</td>
-                <td class="num">0.954</td>
-                <td class="num">0.859</td>
-                <td class="num">0.743</td>
-                <td class="num">180</td>
-              </tr>
-            </tbody>
-            <tbody>
-              <tr>
-                <th scope="rowgroup" colspan="6">TRUSTLab</th>
-              </tr>
-              <tr>
-                <th scope="row"><span class="marker jev" aria-hidden="true"></span>full JevIDS</th>
-                <td>nothing</td>
-                <td class="num">0.930</td>
-                <td class="num">0.908</td>
-                <td class="num">0.838</td>
-                <td class="num">28</td>
-              </tr>
-              <tr>
-                <th scope="row">fixed k = 1</th>
-                <td>the KController never raises k</td>
-                <td class="num">0.893</td>
-                <td class="num">0.877</td>
-                <td class="num">0.838</td>
-                <td class="num">13</td>
-              </tr>
-              <tr>
-                <th scope="row">fixed k = 4</th>
-                <td>no KController, 4 per category</td>
-                <td class="num">0.903</td>
-                <td class="num">0.884</td>
-                <td class="num">0.810</td>
-                <td class="num">37</td>
-              </tr>
-              <tr>
-                <th scope="row">no Selector</th>
-                <td>examples drawn at random</td>
-                <td class="num">0.875</td>
-                <td class="num">0.836</td>
-                <td class="num">0.678</td>
-                <td class="num">223</td>
-              </tr>
-              <tr>
-                <th scope="row">random, k = 4</th>
-                <td>no Selector, no KController</td>
-                <td class="num">0.886</td>
-                <td class="num">0.842</td>
-                <td class="num">0.651</td>
-                <td class="num">277</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <p>
-          The Selector matters most. Without it, the ROC-AUC falls from 0.995 to
-          0.951 on CIC-IDS2017 and from 0.930 to 0.875 on TRUSTLab, the PR-AUC
-          from 0.976 to 0.844 and from 0.908 to 0.836, and the false alarms rise from 15 to 188 and from 28 to 223. A fixed k = 1
-          ties with the KController in F1 on both datasets, and its ROC-AUC on
-          TRUSTLab falls to 0.893. Its run there costs 0.39 USD against 1.32,
-          with no failed call against 144, because the KController's larger
-          requests outgrow TypeSafe's input limit. Seeds 1 and 2 of the fixed-k
-          lines agree.
-        </p>
-
-        <h3>what it costs</h3>
-        <p>
-          On CIC-IDS2017 Jev read about 3,000 tokens per flow, so a run of 2,000
-          flows cost 0.25 USD at TypeSafe's list price (127 USD per million
-          flows), with a median call of 0.23 s. On TRUSTLab, with sixteen categories, it read about 15,500 tokens per flow, 1.30 to 1.32 USD per run, with a median call of 0.29 to 0.30 s. The matched kNN adds no bill. Sonnet cost 15.76 to 15.82 USD per
-          run on CIC-IDS2017 and 51.88 to 52.27 USD on TRUSTLab, 62 and 39 to
-          40 times what Jev cost, and its median call took 1.82 to 1.92 s.
-        </p>
-
-        <h3>limits worth knowing</h3>
-        <ul>
-          <li>
-            On TRUSTLab, 144 to 155 calls per seed failed near the end of the
-            stream, because ten categories had reached k = 8 and the request
-            outgrew TypeSafe's input limit. None of them fell on a zero-day flow
-            at first contact, and the full JevIDS falls back on the kNN for
-            them.
-          </li>
-          <li>
-            The F1 peak on CIC-IDS2017 is narrow. In seed 0 the full JevIDS's F1 is 0.848 at a cut of 0.25, 0.946 at 0.2608 and 0.877 at 0.27, so the F1 depends on a cut taken from another stream.
-          </li>
-          <li>
-            Every label comes back, missed attacks included. A real security
-            team confirms only some of them.
-          </li>
-          <li>
-            Jev's cost is TypeSafe's list price, which may differ from the bill.
-          </li>
-        </ul>
       </section>
 
       <!-- Try it, the commands from the README, unchanged. -->
